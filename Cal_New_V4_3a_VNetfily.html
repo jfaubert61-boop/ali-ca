@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cal_New_V4_3</title>
+
+<style>
+
+body{
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+    background:#f2f2f7;
+    margin:0;
+    padding:15px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    color:#007AFF;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:12px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+label{
+    display:block;
+    margin-top:10px;
+    font-weight:600;
+}
+
+input{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    color:white;
+    background:#007AFF;
+}
+
+button:active{
+    opacity:0.8;
+}
+
+#listeAliments{
+    margin-top:10px;
+    border-top:1px solid #eee;
+}
+
+.aliment{
+    padding:12px;
+    border-bottom:1px solid #eee;
+    cursor:pointer;
+}
+
+.aliment-selectionne{
+    background:#d6e9ff;
+}
+
+.selection{
+    margin-top:10px;
+    color:#007AFF;
+    font-weight:bold;
+}
+
+.ligneRepas{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid #eee;
+    padding:10px 0;
+}
+
+.btnSupprimer{
+    width:auto;
+    background:#ff3b30;
+    margin:0;
+    padding:8px 12px;
+}
+
+.total{
+    text-align:center;
+    font-size:30px;
+    font-weight:bold;
+    color:#34C759;
+}
+
+.info{
+    color:#666;
+    font-size:14px;
+    margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🍎 Cal_New_V4_3</h1>
+
+<div class="card">
+
+<h2>Repas</h2>
+
+<button onclick="exporterRepasJSON()">
+📤 Exporter repas JSON
+</button>
+
+<input
+type="file"
+id="importRepas"
+accept=".json"
+onchange="importerRepasJSON(event)">
+
+<div id="repas"></div>
+
+</div>
+
+<div class="card">
+
+</div>
+
+<div class="card">
+
+<label>Recherche</label>
+
+<input
+type="text"
+id="recherche"
+placeholder="Exemple : pomme">
+
+<div
+id="selection"
+class="selection">
+Aucun aliment sélectionné
+</div>
+
+<div id="listeAliments"></div>
+
+<label>Quantité (g)</label>
+
+<input
+type="number"
+id="quantite"
+value="100"
+min="1">
+
+<button onclick="ajouterAuRepas()">
+Ajouter au repas
+</button>
+
+</div>
+
+<div class="card">
+
+<div id="total" class="total">
+0 kcal
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const aliments = [
+  {
+    "id": 1,
+    "nom": "Avoine50-yog60-pamplem05",
+    "categorie": "Céréales",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 231
+  },
+  {
+    "id": 2,
+    "nom": "Banane",
+    "categorie": "Fruits",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 89
+  },
+  {
+    "id": 3,
+    "nom": "Carotte crue",
+    "categorie": "Légumes",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 41
+  },
+  {
+    "id": 4,
+    "nom": "Carotte cuite",
+    "categorie": "Légumes",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 28
+  },
+  {
+    "id": 5,
+    "nom": "Delice (@Coeur des Saveurs 66g)",
+    "categorie": "Boulangerie",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 190
+  },
+  {
+    "id": 6,
+    "nom": "Flocon avoine",
+    "categorie": "Céréales",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 350
+  },
+  {
+    "id": 7,
+    "nom": "autreAliment",
+    "categorie": "Céréales",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 350
+  },
+  {
+    "id": 8,
+    "nom": "Huile Olive (1cc=5 ; 1cs=15)",
+    "categorie": "Salades",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 633
+  },
+  {
+    "id": 9,
+    "nom": "Jus pamplemousse",
+    "categorie": "Jus de fruits",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 40
+  },
+  {
+    "id": 10,
+    "nom": "Lait",
+    "categorie": "Produits laitiers",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 61
+  },
+  {
+    "id": 11,
+    "nom": "Miel (1cs =21g)",
+    "categorie": "Miel - Confiture",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 320
+  },
+  {
+    "id": 12,
+    "nom": "Thon ou Bar, boîte 155g ou frais",
+    "categorie": "Poisson",
+    "portion_defaut": 155,
+    "unite": "g",
+    "calories_100g": 110
+  },
+  {
+    "id": 13,
+    "nom": "Pomme de Terre sautées",
+    "categorie": "Féculents",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 150
+  },
+  {
+    "id": 14,
+    "nom": "Petits Patés (130 gr)",
+    "categorie": "Charcuterie",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 353
+  },
+  {
+    "id": 15,
+    "nom": "Petits Suisses (60gr)",
+    "categorie": "Produits laitiers",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 141
+  },
+  {
+    "id": 16,
+    "nom": "Pomme",
+    "categorie": "Fruits",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 52
+  },
+  {
+    "id": 17,
+    "nom": "Riz cru",
+    "categorie": "Féculents",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 370
+  },
+  {
+    "id": 18,
+    "nom": "Riz cuit (en sachet 125g cru/ 375g cuit)",
+    "categorie": "Féculents",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 130
+  },
+  {
+    "id": 19,
+    "nom": "Salade Betteraves",
+    "categorie": "Salades",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 44
+  },
+  {
+    "id": 20,
+    "nom": "Salade verte",
+    "categorie": "Salades",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 15
+  },
+  {
+    "id": 21,
+    "nom": "Saucisse aux choux (350gr)",
+    "categorie": "Viande",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 360
+  },
+  {
+    "id": 22,
+    "nom": "Skyr nature",
+    "categorie": "Produits laitiers",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 57
+  },
+  {
+    "id": 23,
+    "nom": "Sauce à Salade (1cs/15ml = 77kcal)",
+    "categorie": "Salades",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 550
+  },
+  {
+    "id": 24,
+    "nom": "Yogourt nature",
+    "categorie": "Produits laitiers",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 58
+  },
+  {
+    "id": 25,
+    "nom": "Terrine de chasse",
+    "categorie": "Charcuterie",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 280
+  },
+  {
+    "id": 26,
+    "nom": "Pain (8x5x2 cm = 45g)",
+    "categorie": "Pain",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 260
+  },
+  {
+    "id": 27,
+    "nom": "Entrecote Cheval",
+    "categorie": "Viande",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 118
+  },
+  {
+    "id": 28,
+    "nom": "Sanglier entrecôte",
+    "categorie": "Viande",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 112
+  },
+  {
+    "id": 29,
+    "nom": "Spätzli",
+    "categorie": "Féculents",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 160
+  },
+  {
+    "id": 30,
+    "nom": "Glace boule 50mm 60g",
+    "categorie": "Dessert",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 200
+  },
+  {
+    "id": 31,
+    "nom": "biscuit Lotus Biscoff 7g 38 kcal)",
+    "categorie": "Dessert",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 484
+  },
+  {
+    "id": 32,
+    "nom": "Chocolat Cailler noisette 7g",
+    "categorie": "Dessert",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 579
+  },
+  {
+    "id": 33,
+    "nom": "Poulet filets",
+    "categorie": "Viande",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 110
+  },
+  {
+    "id": 34,
+    "nom": "côte de bœuf (600g de chair 900 avec os)",
+    "categorie": "Viande",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 280
+  },
+  {
+    "id": 35,
+    "nom": "Oeuf 60g",
+    "categorie": "Œufs",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 133
+  },
+  {
+    "id": 36,
+    "nom": "Pates Crue/Cuite 350/150 kcal 100g",
+    "categorie": "Pâtes",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 130
+  },
+  {
+    "id": 37,
+    "nom": "Fondue fromage/vin 100/40",
+    "categorie": "Produits laitiers",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 415
+  },
+  {
+    "id": 38,
+    "nom": "Kirsch 20cl = 20gr",
+    "categorie": "Alcool",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 250
+  },
+  {
+    "id": 39,
+    "nom": "Orange (~ 180g)",
+    "categorie": "Fruits",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 47
+  },
+  {
+    "id": 40,
+    "nom": "Noix de Cajou",
+    "categorie": "Fruit sec",
+    "portion_defaut": 20,
+    "unite": "g",
+    "calories_100g": 580
+  },
+{
+    "id": 41,
+    "nom": "jambon blanc",
+    "categorie": "viande",
+    "portion_defaut": 100,
+    "unite": "g",
+    "calories_100g": 134
+  }
+
+];
+let repas = [];
+let alimentSelectionne = null;
+
+const listeAliments =
+document.getElementById("listeAliments");
+
+
+
+
+function afficherAliments(filtre=""){
+
+    listeAliments.innerHTML="";
+
+    const resultat =
+    aliments.filter(aliment=>
+
+        aliment.nom
+        .toLowerCase()
+        .includes(
+            filtre.toLowerCase()
+        )
+
+    );
+
+    resultat.forEach(aliment=>{
+
+        const div =
+        document.createElement("div");
+
+        div.className = "aliment";
+
+        div.innerHTML =
+
+        "<strong>" +
+        aliment.nom +
+        "</strong><br aria-hidden=\"true\">" +
+
+        aliment.categorie +
+
+        " • " +
+
+        aliment.calories_100g +
+
+        " kcal /100g";
+
+        div.onclick = ()=>{
+
+            document
+            .querySelectorAll(".aliment")
+            .forEach(el=>
+                el.classList.remove(
+                    "aliment-selectionne"
+                )
+            );
+
+            div.classList.add(
+                "aliment-selectionne"
+            );
+
+            alimentSelectionne =
+            aliment;
+
+            document
+            .getElementById("selection")
+            .innerHTML =
+
+            "Sélection : " +
+            aliment.nom;
+
+            document
+            .getElementById("quantite")
+            .value =
+            aliment.portion_defaut || 100;
+
+        };
+
+        listeAliments
+        .appendChild(div);
+
+    });
+
+}
+
+document
+.getElementById("recherche")
+.addEventListener("input", function(){
+
+    afficherAliments(this.value);
+
+});
+
+function ajouterAuRepas(){
+
+    if(!alimentSelectionne){
+        alert("Sélectionnez un aliment.");
+        return;
+    }
+
+    let nom = alimentSelectionne.nom;
+
+    let quantite = parseFloat(
+        document.getElementById("quantite").value
+    );
+
+    let calories100g =
+        alimentSelectionne.calories_100g;
+
+    if(nom === "autreAliment"){
+
+        const nouveauNom = prompt(
+            "Nom de l'aliment :",
+            ""
+        );
+
+        if(!nouveauNom){
+            return;
+        }
+
+        nom = nouveauNom.trim();
+
+        const nouveauxGrammes = prompt(
+            "Quantité (g) :",
+            quantite
+        );
+
+        if(
+            nouveauxGrammes === null ||
+            isNaN(nouveauxGrammes)
+        ){
+            return;
+        }
+
+        quantite = parseFloat(nouveauxGrammes);
+
+        const nouvellesKcal = prompt(
+            "Calories pour 100 g :",
+            calories100g
+        );
+
+        if(
+            nouvellesKcal === null ||
+            isNaN(nouvellesKcal)
+        ){
+            return;
+        }
+
+        calories100g =
+            parseFloat(nouvellesKcal);
+    }
+
+    const calories =
+        (quantite * calories100g) / 100;
+
+    repas.push({
+        nom: nom,
+        quantite: quantite,
+        calories: calories
+    });
+
+    afficherRepas();
+}
+
+
+function afficherRepas(){
+
+    const zone =
+    document.getElementById("repas");
+
+    zone.innerHTML = "";
+
+    let total = 0;
+
+    repas.forEach((item,index)=>{
+
+        total += item.calories;
+
+        const ligne =
+        document.createElement("div");
+
+        ligne.className =
+        "ligneRepas";
+
+        ligne.innerHTML =
+
+        `
+        <div>
+        <strong>${item.nom}</strong><br>
+        ${item.quantite} g
+        - ${item.calories.toFixed(0)} kcal
+        </div>
+
+        <button
+        class="btnSupprimer"
+        onclick="supprimer(${index})">
+        ✕
+        </button>
+        `;
+
+        zone.appendChild(ligne);
+
+    });
+
+    document
+    .getElementById("total")
+    .innerHTML =
+
+    total.toFixed(0)
+    + " kcal";
+
+}
+
+function supprimer(index){
+
+    repas.splice(index,1);
+
+    afficherRepas();
+
+}
+
+function exporterRepasJSON(){
+
+    const donnees = {
+
+        date:
+        new Date().toLocaleString(),
+
+        total:
+        repas.reduce(
+            (s,item)=>
+            s + item.calories,
+            0
+        ),
+
+        repas: repas
+
+    };
+
+    const blob =
+    new Blob(
+        [
+            JSON.stringify(
+                donnees,
+                null,
+                2
+            )
+        ],
+        {
+            type:
+            "application/json"
+        }
+    );
+
+    const lien =
+    document.createElement("a");
+
+    lien.href =
+    URL.createObjectURL(blob);
+
+    const date =
+    new Date()
+    .toISOString()
+    .slice(0,10);
+
+    lien.download =
+    "Repas_" +
+    date +
+    ".json";
+
+    lien.click();
+
+    URL.revokeObjectURL(
+        lien.href
+    );
+}
+
+
+
+function importerRepasJSON(event){
+
+    const fichier =
+    event.target.files[0];
+
+    if(!fichier){
+        return;
+    }
+
+    const lecteur =
+    new FileReader();
+
+    lecteur.onload =
+    function(e){
+
+        try{
+
+            const data =
+            JSON.parse(
+                e.target.result
+            );
+
+            if(
+                Array.isArray(
+                    data.repas
+                )
+            ){
+
+                repas =
+                data.repas;
+
+                afficherRepas();
+
+                alert(
+                "Repas importé avec succès."
+                );
+
+            }
+            else{
+
+                alert(
+                "Format JSON invalide."
+                );
+
+            }
+
+        }
+        catch(err){
+
+            alert(
+            "Erreur de lecture du fichier JSON."
+            );
+
+        }
+
+    };
+
+    lecteur.readAsText(
+        fichier
+    );
+
+}
+
+afficherAliments();
+console.log("Nombre d'aliments :", aliments.length);
+</script>
+
+</body>
+</html>
