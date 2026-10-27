@@ -518,11 +518,27 @@ const aliments = [
 let repas = [];
 let alimentSelectionne = null;
 
+const STORAGE_KEY = "ali-ca-repas";
+
 const listeAliments =
 document.getElementById("listeAliments");
 
+function sauvegarderRepas(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(repas));
+}
 
-
+function chargerRepas(){
+    try{
+        const donnees = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if(Array.isArray(donnees)){
+            repas = donnees;
+        }
+    }
+    catch(err){
+        console.error("Erreur lors du chargement des repas :", err);
+        repas = [];
+    }
+}
 
 function afficherAliments(filtre=""){
 
@@ -674,6 +690,7 @@ function ajouterAuRepas(){
         calories: calories
     });
 
+    sauvegarderRepas();
     afficherRepas();
 }
 
@@ -729,7 +746,7 @@ function afficherRepas(){
 function supprimer(index){
 
     repas.splice(index,1);
-
+    sauvegarderRepas();
     afficherRepas();
 
 }
@@ -823,6 +840,7 @@ function importerRepasJSON(event){
                 repas =
                 data.repas;
 
+                sauvegarderRepas();
                 afficherRepas();
 
                 alert(
@@ -855,7 +873,9 @@ function importerRepasJSON(event){
 
 }
 
+chargerRepas();
 afficherAliments();
+afficherRepas();
 console.log("Nombre d'aliments :", aliments.length);
 </script>
 
