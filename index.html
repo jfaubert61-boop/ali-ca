@@ -138,6 +138,16 @@ button:active{
 <label for="dateRepas">Jour</label>
 <input type="date" id="dateRepas">
 
+<label for="poidsKg">Poids (kg)</label>
+<input
+    type="number"
+    id="poidsKg"
+    min="0"
+    max="999.9"
+    step="0.1"
+    inputmode="decimal"
+    placeholder="###.#">
+
 <div style="display:grid; gap:8px;">
     <button onclick="exporterRepasJSON()">
     📤 Exporter repas JSON
@@ -263,6 +273,7 @@ let alimentSelectionne = null;
 const STORAGE_KEY = "ali-ca-repas";
 const listeAliments = document.getElementById("listeAliments");
 const dateInput = document.getElementById("dateRepas");
+const poidsInput = document.getElementById("poidsKg");
 
 function formaterDate(dateStr){
     const date = new Date(dateStr + "T00:00:00");
@@ -288,9 +299,13 @@ function normaliserHistorique(data){
         const jours = {};
         Object.entries(data).forEach(([date, valeur]) => {
             const repas = Array.isArray(valeur?.repas) ? valeur.repas : (Array.isArray(valeur) ? valeur : []);
+            const poidsKg = Number(valeur?.poidsKg);
             jours[date] = {
                 repas,
-                total: repas.reduce((s, item) => s + (Number(item.calories) || 0), 0)
+                total: repas.reduce((s, item) => s + (Number(item.calories) || 0), 0),
+                poidsKg: valeur?.poidsKg !== null && valeur?.poidsKg !== "" && Number.isFinite(poidsKg) && poidsKg >= 0 && poidsKg <= 999.9
+                    ? poidsKg
+                    : null
             };
         });
         return jours;
@@ -385,9 +400,11 @@ function getRepasDuJour(){
 }
 
 function setRepasDuJour(nouvelleListe){
+    const poidsKg = historiqueRepas[dateSelectionnee]?.poidsKg ?? null;
     historiqueRepas[dateSelectionnee] = {
         repas: nouvelleListe,
-        total: nouvelleListe.reduce((s, item) => s + (Number(item.calories) || 0), 0)
+        total: nouvelleListe.reduce((s, item) => s + (Number(item.calories) || 0), 0),
+        poidsKg
     };
     sauvegarderRepas();
 }
@@ -402,16 +419,21 @@ function escapeCSV(valeur){
 }
 
 function getCsvContent(){
-    const lignes = [["date", "aliment", "quantite_g", "calories_kcal"]];
+    const lignes = [["date", "aliment", "quantite_g", "calories_kcal", "poids_kg"]];
 
     getHistoriqueTrie().forEach(([dateJour, data]) => {
         const repas = Array.isArray(data?.repas) ? data.repas : [];
+        const poidsKg = data?.poidsKg == null ? "" : Number(data.poidsKg).toFixed(1);
+        if (repas.length === 0 && poidsKg !== "") {
+            lignes.push([dateJour, "", "", "", poidsKg]);
+        }
         repas.forEach((item) => {
             lignes.push([
                 dateJour,
                 item.nom,
                 Number(item.quantite) || 0,
-                Number(item.calories) || 0
+                Number(item.calories) || 0,
+                poidsKg
             ]);
         });
     });
@@ -512,9 +534,25 @@ document.getElementById("recherche").addEventListener("input", function(){
 dateInput.addEventListener("change", function(){
     dateSelectionnee = this.value || new Date().toISOString().slice(0, 10);
     if (!historiqueRepas[dateSelectionnee]) {
-        historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
+        historiqueRepas[dateSelectionnee] = { repas: [], total: 0, poidsKg: null };
     }
     afficherRepas();
+});
+
+poidsInput.addEventListener("change", function(){
+    if (!this.checkValidity()) {
+        alert("Saisissez un poids compris entre 0 et 999,9 kg avec une seule décimale au maximum.");
+        afficherRepas();
+        return;
+    }
+
+    const poidsKg = this.value === "" ? null : this.valueAsNumber;
+    historiqueRepas[dateSelectionnee].poidsKg = poidsKg;
+    if (poidsKg !== null) {
+        this.value = poidsKg.toFixed(1);
+    }
+    sauvegarderRepas();
+    afficherHistorique();
 });
 
 function ajouterAuRepas(){
@@ -572,6 +610,8 @@ function afficherRepas(){
     const zone = document.getElementById("repas");
     zone.innerHTML = "";
 
+    const jour = historiqueRepas[dateSelectionnee];
+    poidsInput.value = jour?.poidsKg ?? "";
     const repasDuJour = getRepasDuJour();
     let total = 0;
 
@@ -616,11 +656,12 @@ function afficherHistorique(){
         .map(([dateJour, data]) => {
             const items = Array.isArray(data?.repas) ? data.repas : [];
             const totalJour = items.reduce((s, item) => s + (Number(item.calories) || 0), 0);
+            const poidsJour = data?.poidsKg == null ? "" : ` • ${Number(data.poidsKg).toFixed(1)} kg`;
             const actif = dateJour === dateSelectionnee ? "<strong>•</strong> " : "";
             return `
                 <div class="historiqueJour">
                     <div>${actif}${formaterDate(dateJour)}</div>
-                    <div>${items.length} aliments • ${totalJour.toFixed(0)} kcal</div>
+                    <div>${items.length} aliments • ${totalJour.toFixed(0)} kcal${poidsJour}</div>
                 </div>
             `;
         })
