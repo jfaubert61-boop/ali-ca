@@ -212,6 +212,7 @@ Ajouter au repas
 <div class="card">
     <label>Aliment personnalisé</label>
     <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
+    <input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)">
     <input type="number" id="kcalPerso" min="0" step="1" placeholder="kcal / 100g">
     <button onclick="ajouterAlimentPerso()">Ajouter à la liste</button>
 </div>
@@ -228,7 +229,7 @@ const BASE_ALIMENTS = [
 {"id": 5,"nom":"Delice (@Coeur des Saveurs 66g)","categorie":"Boulangerie","portion_defaut":100,"unite":"g","calories_100g":190},
 {"id": 6,"nom":"Flocon avoine","categorie":"Céréales","portion_defaut":100,"unite":"g","calories_100g":350},
 {"id": 7,"nom":"Gruyere","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":400},
-{"id": 8,"nom":"Huile(Beurre) 1cc=5g(6) 1cs=15g(19)","categorie":"Corps gras","portion_defaut":100,"unite":"g","calories_100g":633},
+{"id": 8,"nom":"Huile(Beurre) 1cc=5g(6);1cs=15g(19)","categorie":"Corps gras","portion_defaut":100,"unite":"g","calories_100g":633},
 {"id": 9,"nom":"Jus pamplemousse","categorie":"Jus de Fruit","portion_defaut":100,"unite":"g","calories_100g":40},
 {"id":10,"nom":"Lait","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":61},
 {"id":11,"nom":"Miel (1cc rase = 7g ; 1cs =21g)","categorie":"Miel - Confiture","portion_defaut":7,"unite":"g","calories_100g":320},
@@ -314,7 +315,9 @@ function chargerAlimentsPerso(){
 function sauvegarderAlimentsPerso(){
     try {
         if (typeof localStorage === "undefined") return;
-        const personnalises = aliments.filter(aliment => aliment.categorie === "Personnalisé" || aliment.categorie === "Aliment personnalisé");
+        const personnalises = aliments.filter(aliment =>
+            aliment.categorie === "Personnalisé" || aliment.categorie === "Aliment personnalisé"
+        );
         localStorage.setItem(CUSTOM_FOODS_KEY, JSON.stringify(personnalises));
     } catch (err) {
         console.warn("Impossible de sauvegarder les aliments personnalisés", err);
@@ -323,9 +326,11 @@ function sauvegarderAlimentsPerso(){
 
 function ajouterAlimentPerso(){
     const nomInput = document.getElementById("nomAlimentPerso");
+    const categorieInput = document.getElementById("categorieAlimentPerso");
     const kcalInput = document.getElementById("kcalPerso");
 
     const nom = (nomInput.value || "").trim();
+    const categorie = (categorieInput.value || "Personnalisé").trim() || "Personnalisé";
     const kcal = Number(kcalInput.value);
 
     if (!nom) {
@@ -334,14 +339,14 @@ function ajouterAlimentPerso(){
     }
 
     if (!Number.isFinite(kcal) || kcal < 0) {
-        alert("Saisis une valeur de kcal valide (> 0). ");
+        alert("Saisis une valeur de kcal valide (> 0).");
         return;
     }
 
     const nouvelAliment = {
         id: Date.now(),
         nom,
-        categorie: "Personnalisé",
+        categorie,
         portion_defaut: 100,
         unite: "g",
         calories_100g: kcal
@@ -354,6 +359,7 @@ function ajouterAlimentPerso(){
     document.getElementById("selection").innerHTML = "Sélection : " + nom;
     document.getElementById("quantite").value = 100;
     nomInput.value = "";
+    categorieInput.value = "";
     kcalInput.value = "";
 
     document.getElementById("recherche").value = "";
