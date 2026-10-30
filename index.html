@@ -180,6 +180,14 @@ button:active{
 </div>
 
 <div class="card">
+    <label>Aliment personnalisé</label>
+    <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
+    <input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)">
+    <input type="number" id="kcalPerso" min="0" step="1" placeholder="kcal / 100g">
+    <button onclick="ajouterAlimentPerso()">Ajouter à la liste</button>
+</div>
+
+<div class="card">
 
 <label>Recherche</label>
 
@@ -207,14 +215,6 @@ Aucun aliment sélectionné
 Ajouter au repas
 </button>
 
-</div>
-
-<div class="card">
-    <label>Aliment personnalisé</label>
-    <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
-    <input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)">
-    <input type="number" id="kcalPerso" min="0" step="1" placeholder="kcal / 100g">
-    <button onclick="ajouterAlimentPerso()">Ajouter à la liste</button>
 </div>
 
 </div>
