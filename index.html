@@ -209,11 +209,18 @@ Ajouter au repas
 
 </div>
 
+<div class="card">
+    <label>Aliment personnalisé</label>
+    <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
+    <input type="number" id="kcalPerso" min="0" step="1" placeholder="kcal / 100g">
+    <button onclick="ajouterAlimentPerso()">Ajouter à la liste</button>
+</div>
+
 </div>
 
 <script>
 
-const aliments = [
+const BASE_ALIMENTS = [
   {"id": 1,"nom":"Avoine50-yog60-pamplem05","categorie":"Céréales","portion_defaut":100,"unite":"g","calories_100g":231},
 {"id": 2,"nom":"Banane 90-100g","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":89},
 {"id": 3,"nom":"Carotte crue","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":41},
@@ -278,14 +285,82 @@ const aliments = [
 {"id":62,"nom":"Abricot sec","categorie":"Dessert","portion_defaut":100,"unite":"g","calories_100g":276}
 ];
 
+let aliments = [...BASE_ALIMENTS];
 let historiqueRepas = {};
 let dateSelectionnee = new Date().toISOString().slice(0, 10);
 let alimentSelectionne = null;
 
 const STORAGE_KEY = "ali-ca-repas";
+const CUSTOM_FOODS_KEY = "ali-ca-custom-foods";
 const listeAliments = document.getElementById("listeAliments");
 const dateInput = document.getElementById("dateRepas");
 const poidsInput = document.getElementById("poidsKg");
+
+function chargerAlimentsPerso(){
+    try {
+        if (typeof localStorage === "undefined") {
+            return [];
+        }
+        const raw = localStorage.getItem(CUSTOM_FOODS_KEY);
+        if (!raw) return [];
+        const data = JSON.parse(raw);
+        return Array.isArray(data) ? data : [];
+    } catch (err) {
+        console.warn("Impossible de charger les aliments personnalisés", err);
+        return [];
+    }
+}
+
+function sauvegarderAlimentsPerso(){
+    try {
+        if (typeof localStorage === "undefined") return;
+        const personnalises = aliments.filter(aliment => aliment.categorie === "Personnalisé" || aliment.categorie === "Aliment personnalisé");
+        localStorage.setItem(CUSTOM_FOODS_KEY, JSON.stringify(personnalises));
+    } catch (err) {
+        console.warn("Impossible de sauvegarder les aliments personnalisés", err);
+    }
+}
+
+function ajouterAlimentPerso(){
+    const nomInput = document.getElementById("nomAlimentPerso");
+    const kcalInput = document.getElementById("kcalPerso");
+
+    const nom = (nomInput.value || "").trim();
+    const kcal = Number(kcalInput.value);
+
+    if (!nom) {
+        alert("Saisis le nom de l'aliment.");
+        return;
+    }
+
+    if (!Number.isFinite(kcal) || kcal < 0) {
+        alert("Saisis une valeur de kcal valide (> 0). ");
+        return;
+    }
+
+    const nouvelAliment = {
+        id: Date.now(),
+        nom,
+        categorie: "Personnalisé",
+        portion_defaut: 100,
+        unite: "g",
+        calories_100g: kcal
+    };
+
+    aliments.push(nouvelAliment);
+    sauvegarderAlimentsPerso();
+
+    alimentSelectionne = nouvelAliment;
+    document.getElementById("selection").innerHTML = "Sélection : " + nom;
+    document.getElementById("quantite").value = 100;
+    nomInput.value = "";
+    kcalInput.value = "";
+
+    document.getElementById("recherche").value = "";
+    afficherAliments();
+}
+
+aliments = aliments.concat(chargerAlimentsPerso());
 
 function formaterDate(dateStr){
     const date = new Date(dateStr + "T00:00:00");
@@ -509,7 +584,6 @@ async function sauvegarderCSV(){
 }
 
 function afficherAliments(filtre=""){
-
     listeAliments.innerHTML="";
 
     const resultat = aliments.filter(aliment =>
@@ -517,7 +591,6 @@ function afficherAliments(filtre=""){
     );
 
     resultat.forEach(aliment => {
-
         const div = document.createElement("div");
         div.className = "aliment";
         div.innerHTML = "<strong>" + aliment.nom + "</strong><br aria-hidden=\"true\">" + aliment.categorie + " • " + aliment.calories_100g + " kcal /100g";
@@ -536,7 +609,6 @@ function afficherAliments(filtre=""){
 
         listeAliments.appendChild(div);
     });
-
 }
 
 document.getElementById("recherche").addEventListener("input", function(){
@@ -568,7 +640,6 @@ poidsInput.addEventListener("change", function(){
 });
 
 function ajouterAuRepas(){
-
     if(!alimentSelectionne){
         alert("Sélectionnez un aliment.");
         return;
@@ -618,7 +689,6 @@ function ajouterAuRepas(){
 }
 
 function afficherRepas(){
-
     const zone = document.getElementById("repas");
     zone.innerHTML = "";
 
@@ -628,7 +698,6 @@ function afficherRepas(){
     let total = 0;
 
     repasDuJour.forEach((item,index) => {
-
         total += Number(item.calories) || 0;
 
         const ligne = document.createElement("div");
@@ -688,7 +757,6 @@ function supprimer(index){
 }
 
 function exporterRepasJSON(){
-
     const donnees = {
         date: new Date().toLocaleString(),
         repasParJour: historiqueRepas,
@@ -708,7 +776,6 @@ function exporterRepasJSON(){
 }
 
 function importerRepasJSON(event){
-
     const fichier = event.target.files[0];
 
     if(!fichier){
