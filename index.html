@@ -195,6 +195,9 @@ button:active{
     <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
     <input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)">
     <input type="number" id="kcalPerso" min="0" step="1" placeholder="kcal / 100g">
+    <input type="number" id="glucidePerso" min="0" step="0.1" placeholder="Glucides / 100g (g)">
+    <input type="number" id="lipidePerso" min="0" step="0.1" placeholder="Lipides / 100g (g)">
+    <input type="number" id="proteinePerso" min="0" step="0.1" placeholder="Protéines / 100g (g)">
     <button onclick="ajouterAlimentPerso()">Ajouter à la liste</button>
 </div>
 
@@ -231,6 +234,19 @@ Ajouter au repas
 </div>
 
 <script>
+
+function normaliserAliment(aliment) {
+    if (!aliment || typeof aliment !== "object") {
+        return aliment;
+    }
+
+    return {
+        ...aliment,
+        glucide: Number(aliment.glucide) || 0,
+        lipide: Number(aliment.lipide) || 0,
+        proteine: Number(aliment.proteine) || 0
+    };
+}
 
 const BASE_ALIMENTS = [
   {"id": 1,"nom":"Avoine50-yog60-pamplem05","categorie":"Céréales","portion_defaut":100,"unite":"g","calories_100g":231},
@@ -302,7 +318,7 @@ const BASE_ALIMENTS = [
 {"id":67,"nom":"alim2","categorie":"Assiette","portion_defaut":100,"unite":"g","calories_100g":850},
 {"id":68,"nom":"alim3","categorie":"Assiette","portion_defaut":100,"unite":"g","calories_100g":850},
 {"id":69,"nom":"alim4","categorie":"Assiette","portion_defaut":100,"unite":"g","calories_100g":850}
-];
+].map(normaliserAliment);
 
 let aliments = [...BASE_ALIMENTS];
 let historiqueRepas = {};
@@ -326,7 +342,7 @@ function chargerAlimentsPerso(){
         const raw = localStorage.getItem(CUSTOM_FOODS_KEY);
         if (!raw) return [];
         const data = JSON.parse(raw);
-        return Array.isArray(data) ? data : [];
+        return Array.isArray(data) ? data.map(normaliserAliment) : [];
     } catch (err) {
         console.warn("Impossible de charger les aliments personnalisés", err);
         return [];
@@ -338,7 +354,7 @@ function sauvegarderAlimentsPerso(){
         if (typeof localStorage === "undefined") return;
         const personnalises = aliments.filter(aliment =>
             aliment.categorie === "Personnalisé" || aliment.categorie === "Aliment personnalisé"
-        );
+        ).map(normaliserAliment);
         localStorage.setItem(CUSTOM_FOODS_KEY, JSON.stringify(personnalises));
     } catch (err) {
         console.warn("Impossible de sauvegarder les aliments personnalisés", err);
@@ -349,10 +365,16 @@ function ajouterAlimentPerso(){
     const nomInput = document.getElementById("nomAlimentPerso");
     const categorieInput = document.getElementById("categorieAlimentPerso");
     const kcalInput = document.getElementById("kcalPerso");
+    const glucideInput = document.getElementById("glucidePerso");
+    const lipideInput = document.getElementById("lipidePerso");
+    const proteineInput = document.getElementById("proteinePerso");
 
     const nom = (nomInput.value || "").trim();
     const categorie = (categorieInput.value || "Personnalisé").trim() || "Personnalisé";
     const kcal = Number(kcalInput.value);
+    const glucide = Number(glucideInput.value) || 0;
+    const lipide = Number(lipideInput.value) || 0;
+    const proteine = Number(proteineInput.value) || 0;
 
     if (!nom) {
         alert("Saisis le nom de l'aliment.");
@@ -370,7 +392,10 @@ function ajouterAlimentPerso(){
         categorie,
         portion_defaut: 100,
         unite: "g",
-        calories_100g: kcal
+        calories_100g: kcal,
+        glucide,
+        lipide,
+        proteine
     };
 
     aliments.push(nouvelAliment);
@@ -383,12 +408,15 @@ function ajouterAlimentPerso(){
     nomInput.value = "";
     categorieInput.value = "";
     kcalInput.value = "";
+    glucideInput.value = "";
+    lipideInput.value = "";
+    proteineInput.value = "";
 
     document.getElementById("recherche").value = "";
     afficherAliments();
 }
 
-aliments = aliments.concat(chargerAlimentsPerso()).sort(trierAlimentsParNom);
+aliments = aliments.concat(chargerAlimentsPerso()).map(normaliserAliment).sort(trierAlimentsParNom);
 
 function formaterDate(dateStr){
     const date = new Date(dateStr + "T00:00:00");
@@ -613,13 +641,14 @@ function afficherAliments(filtre=""){
     listeAliments.innerHTML="";
 
     const resultat = [...aliments]
-        .filter(aliment => aliment.nom.toLowerCase().includes(filtre.toLowerCase()))
+        .filter(aliment => (aliment.nom || "").toLowerCase().includes(filtre.toLowerCase()))
         .sort(trierAlimentsParNom);
 
     resultat.forEach(aliment => {
         const div = document.createElement("div");
         div.className = "aliment";
-        div.innerHTML = "<strong>" + aliment.nom + "</strong><br aria-hidden=\"true\">" + aliment.categorie + " • " + aliment.calories_100g + " kcal /100g";
+        const macros = ` • G ${Number(aliment.glucide || 0).toFixed(0)} • L ${Number(aliment.lipide || 0).toFixed(0)} • P ${Number(aliment.proteine || 0).toFixed(0)}`;
+        div.innerHTML = "<strong>" + aliment.nom + "</strong><br aria-hidden=\"true\">" + aliment.categorie + " • " + aliment.calories_100g + " kcal /100g" + macros;
 
         div.onclick = () => {
             document.querySelectorAll(".aliment").forEach(el =>
