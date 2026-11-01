@@ -3,11 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Cal_New_V4_5</title>
-
 <style>
-
 body{
     font-family:-apple-system,BlinkMacSystemFont,sans-serif;
     background:#f2f2f7;
@@ -15,24 +12,20 @@ body{
     padding:12px;
     font-size:14px;
 }
-
 .container{
     max-width:700px;
     margin:auto;
 }
-
 h1{
     text-align:center;
     color:#007AFF;
     font-size:24px;
     margin:8px 0 16px;
 }
-
 h2 {
     margin:0 0 10px;
     font-size:18px;
 }
-
 .card{
     background:white;
     padding:12px;
@@ -40,14 +33,12 @@ h2 {
     border-radius:10px;
     box-shadow:0 2px 5px rgba(0,0,0,0.08);
 }
-
 label{
     display:block;
     margin-top:8px;
     font-weight:600;
     font-size:13px;
 }
-
 input{
     width:100%;
     box-sizing:border-box;
@@ -56,7 +47,6 @@ input{
     border-radius:8px;
     font-size:14px;
 }
-
 button{
     width:100%;
     padding:12px;
@@ -68,34 +58,21 @@ button{
     color:white;
     background:#007AFF;
 }
-
-button:active{
-    opacity:0.8;
-}
-
-#listeAliments{
-    margin-top:10px;
-    border-top:1px solid #eee;
-}
-
+button:active{ opacity:0.8; }
+#listeAliments{ margin-top:10px; border-top:1px solid #eee; }
 .aliment{
     padding:10px 8px;
     border-bottom:1px solid #eee;
     cursor:pointer;
     font-size:13px;
 }
-
-.aliment-selectionne{
-    background:#d6e9ff;
-}
-
+.aliment-selectionne{ background:#d6e9ff; }
 .selection{
     margin-top:10px;
     color:#007AFF;
     font-weight:bold;
     font-size:13px;
 }
-
 .ligneRepas{
     display:flex;
     justify-content:space-between;
@@ -104,7 +81,6 @@ button:active{
     padding:8px 0;
     font-size:13px;
 }
-
 .btnSupprimer{
     width:auto;
     background:#ff3b30;
@@ -112,75 +88,46 @@ button:active{
     padding:6px 10px;
     font-size:12px;
 }
-
 .total{
     text-align:center;
     font-size:22px;
     font-weight:bold;
     color:#34C759;
 }
-
 .info{
     color:#666;
     font-size:12px;
     margin-top:8px;
 }
-
 .historiqueJour {
     padding:6px 0;
     border-bottom:1px solid #eee;
     font-size:12px;
 }
-
-.historiqueJour:last-child {
-    border-bottom:none;
-}
-
+.historiqueJour:last-child { border-bottom:none; }
 </style>
 </head>
-
 <body>
-
 <div class="container">
+  <h1>🍎 Cal_New_V4_5</h1>
 
-<h1>🍎 Cal_New_V4_5</h1>
+  <div class="card">
+    <h2>Repas</h2>
 
-<div class="card">
+    <label for="poidsKg">Poids (kg)</label>
+    <input type="number" id="poidsKg" min="0" max="999.9" step="0.1" inputmode="decimal" placeholder="###.#">
 
-<h2>Repas</h2>
+    <div style="display:grid; gap:8px;">
+      <button onclick="exporterRepasJSON()">📤 Exporter repas JSON</button>
+      <button onclick="sauvegarderCSV()">📄 Enregistrer CSV dans le dossier</button>
+    </div>
 
-<label for="poidsKg">Poids (kg)</label>
-<input
-    type="number"
-    id="poidsKg"
-    min="0"
-    max="999.9"
-    step="0.1"
-    inputmode="decimal"
-    placeholder="###.#">
+    <input type="file" id="importRepas" accept=".json" onchange="importerRepasJSON(event)">
+    <div id="repas"></div>
+    <div id="historiqueJours" class="info"></div>
+  </div>
 
-<div style="display:grid; gap:8px;">
-    <button onclick="exporterRepasJSON()">
-    📤 Exporter repas JSON
-    </button>
-
-    <button onclick="sauvegarderCSV()">
-    📄 Enregistrer CSV dans le dossier
-    </button>
-</div>
-
-<input
-    type="file"
-    id="importRepas"
-    accept=".json"
-    onchange="importerRepasJSON(event)">
-
-<div id="repas"></div>
-<div id="historiqueJours" class="info"></div>
-
-</div>
-
-<div class="card">
+  <div class="card">
     <label>Aliment personnalisé</label>
     <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
     <input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)">
@@ -189,9 +136,9 @@ button:active{
     <input type="number" id="lipidePerso" min="0" step="0.1" value="20" placeholder="Lipides / 100g (g)">
     <input type="number" id="proteinePerso" min="0" step="0.1" value="30" placeholder="Protéines / 100g (g)">
     <button onclick="ajouterAlimentPerso()">Ajouter à la liste</button>
-</div>
+  </div>
 
-<div class="card">
+  <div class="card">
     <label>Recherche</label>
     <input type="text" id="recherche" placeholder="Exemple : pomme">
 
@@ -202,31 +149,34 @@ button:active{
     <input type="number" id="quantite" value="100" min="1">
 
     <button onclick="ajouterAuRepas()">Ajouter au repas</button>
-</div>
+  </div>
 
-<div class="card">
+  <div class="card">
     <div id="total" class="total">0 kcal</div>
-</div>
-
+  </div>
 </div>
 
 <script>
-
 function normaliserAliment(aliment) {
-    if (!aliment || typeof aliment !== "object") {
-        return aliment;
-    }
+  if (!aliment || typeof aliment !== "object") return aliment;
+  const glucide = Number(aliment.glucide);
+  const lipide = Number(aliment.lipide);
+  const proteine = Number(aliment.proteine);
+  return {
+    ...aliment,
+    glucide: Number.isFinite(glucide) && glucide >= 0 ? glucide : 10,
+    lipide: Number.isFinite(lipide) && lipide >= 0 ? lipide : 20,
+    proteine: Number.isFinite(proteine) && proteine >= 0 ? proteine : 30
+  };
+}
 
-    const glucide = Number(aliment.glucide);
-    const lipide = Number(aliment.lipide);
-    const proteine = Number(aliment.proteine);
-
-    return {
-        ...aliment,
-        glucide: Number.isFinite(glucide) && glucide >= 0 ? glucide : 10,
-        lipide: Number.isFinite(lipide) && lipide >= 0 ? lipide : 20,
-        proteine: Number.isFinite(proteine) && proteine >= 0 ? proteine : 30
-    };
+function calculerMacros(aliment, quantite) {
+  const q = Number(quantite) || 0;
+  return {
+    glucide: ((Number(aliment.glucide) || 0) * q) / 100,
+    lipide: ((Number(aliment.lipide) || 0) * q) / 100,
+    proteine: ((Number(aliment.proteine) || 0) * q) / 100
+  };
 }
 
 const BASE_ALIMENTS = [
@@ -266,532 +216,513 @@ const CUSTOM_FOODS_KEY = "ali-ca-custom-foods";
 const listeAliments = document.getElementById("listeAliments");
 const poidsInput = document.getElementById("poidsKg");
 
-function trierAlimentsParNom(alimentA, alimentB) {
-    return String(alimentA.nom || "").localeCompare(String(alimentB.nom || ""), "fr", { sensitivity: "base" });
+function trierAlimentsParNom(a, b) {
+  return String(a.nom || "").localeCompare(String(b.nom || ""), "fr", { sensitivity: "base" });
 }
 
-function chargerAlimentsPerso(){
-    try {
-        if (typeof localStorage === "undefined") {
-            return [];
-        }
-        const raw = localStorage.getItem(CUSTOM_FOODS_KEY);
-        if (!raw) return [];
-        const data = JSON.parse(raw);
-        return Array.isArray(data) ? data.map(normaliserAliment) : [];
-    } catch (err) {
-        console.warn("Impossible de charger les aliments personnalisés", err);
-        return [];
-    }
+function chargerAlimentsPerso() {
+  try {
+    if (typeof localStorage === "undefined") return [];
+    const raw = localStorage.getItem(CUSTOM_FOODS_KEY);
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data.map(normaliserAliment) : [];
+  } catch (err) {
+    console.warn("Impossible de charger les aliments personnalisés", err);
+    return [];
+  }
 }
 
-function sauvegarderAlimentsPerso(){
-    try {
-        if (typeof localStorage === "undefined") return;
-        const personnalises = aliments.filter(aliment =>
-            aliment.categorie === "Personnalisé" || aliment.categorie === "Aliment personnalisé"
-        ).map(normaliserAliment);
-        localStorage.setItem(CUSTOM_FOODS_KEY, JSON.stringify(personnalises));
-    } catch (err) {
-        console.warn("Impossible de sauvegarder les aliments personnalisés", err);
-    }
+function sauvegarderAlimentsPerso() {
+  try {
+    if (typeof localStorage === "undefined") return;
+    const personnalises = aliments.filter(aliment =>
+      aliment.categorie === "Personnalisé" || aliment.categorie === "Aliment personnalisé"
+    ).map(normaliserAliment);
+    localStorage.setItem(CUSTOM_FOODS_KEY, JSON.stringify(personnalises));
+  } catch (err) {
+    console.warn("Impossible de sauvegarder les aliments personnalisés", err);
+  }
 }
 
-function ajouterAlimentPerso(){
-    const nomInput = document.getElementById("nomAlimentPerso");
-    const categorieInput = document.getElementById("categorieAlimentPerso");
-    const kcalInput = document.getElementById("kcalPerso");
-    const glucideInput = document.getElementById("glucidePerso");
-    const lipideInput = document.getElementById("lipidePerso");
-    const proteineInput = document.getElementById("proteinePerso");
+function ajouterAlimentPerso() {
+  const nomInput = document.getElementById("nomAlimentPerso");
+  const categorieInput = document.getElementById("categorieAlimentPerso");
+  const kcalInput = document.getElementById("kcalPerso");
+  const glucideInput = document.getElementById("glucidePerso");
+  const lipideInput = document.getElementById("lipidePerso");
+  const proteineInput = document.getElementById("proteinePerso");
 
-    const nom = (nomInput.value || "").trim();
-    const categorie = (categorieInput.value || "Personnalisé").trim() || "Personnalisé";
-    const kcal = Number(kcalInput.value);
-    const glucide = Number(glucideInput.value);
-    const lipide = Number(lipideInput.value);
-    const proteine = Number(proteineInput.value);
+  const nom = (nomInput.value || "").trim();
+  const categorie = (categorieInput.value || "Personnalisé").trim() || "Personnalisé";
+  const kcal = Number(kcalInput.value);
+  const glucide = Number(glucideInput.value);
+  const lipide = Number(lipideInput.value);
+  const proteine = Number(proteineInput.value);
 
-    if (!nom) {
-        alert("Saisis le nom de l'aliment.");
-        return;
-    }
+  if (!nom) { alert("Saisis le nom de l'aliment."); return; }
+  if (!Number.isFinite(kcal) || kcal < 0) { alert("Saisis une valeur de kcal valide (> 0).\n"); return; }
 
-    if (!Number.isFinite(kcal) || kcal < 0) {
-        alert("Saisis une valeur de kcal valide (> 0).\n");
-        return;
-    }
+  const nouvelAliment = {
+    id: Date.now(),
+    nom,
+    categorie,
+    portion_defaut: 100,
+    unite: "g",
+    calories_100g: kcal,
+    glucide: Number.isFinite(glucide) && glucide >= 0 ? glucide : 10,
+    lipide: Number.isFinite(lipide) && lipide >= 0 ? lipide : 20,
+    proteine: Number.isFinite(proteine) && proteine >= 0 ? proteine : 30
+  };
 
-    const nouvelAliment = {
-        id: Date.now(),
-        nom,
-        categorie,
-        portion_defaut: 100,
-        unite: "g",
-        calories_100g: kcal,
-        glucide: Number.isFinite(glucide) && glucide >= 0 ? glucide : 10,
-        lipide: Number.isFinite(lipide) && lipide >= 0 ? lipide : 20,
-        proteine: Number.isFinite(proteine) && proteine >= 0 ? proteine : 30
-    };
+  aliments.push(nouvelAliment);
+  aliments.sort(trierAlimentsParNom);
+  sauvegarderAlimentsPerso();
 
-    aliments.push(nouvelAliment);
-    aliments.sort(trierAlimentsParNom);
-    sauvegarderAlimentsPerso();
+  alimentSelectionne = nouvelAliment;
+  document.getElementById("selection").innerHTML = "Sélection : " + nom;
+  document.getElementById("quantite").value = 100;
+  nomInput.value = "";
+  categorieInput.value = "";
+  kcalInput.value = "";
+  glucideInput.value = "10";
+  lipideInput.value = "20";
+  proteineInput.value = "30";
 
-    alimentSelectionne = nouvelAliment;
-    document.getElementById("selection").innerHTML = "Sélection : " + nom;
-    document.getElementById("quantite").value = 100;
-    nomInput.value = "";
-    categorieInput.value = "";
-    kcalInput.value = "";
-    glucideInput.value = "10";
-    lipideInput.value = "20";
-    proteineInput.value = "30";
-
-    document.getElementById("recherche").value = "";
-    afficherAliments();
+  document.getElementById("recherche").value = "";
+  afficherAliments("");
 }
 
 aliments = aliments.concat(chargerAlimentsPerso()).map(normaliserAliment).sort(trierAlimentsParNom);
 
 function formaterDate(dateStr){
-    const date = new Date(dateStr + "T00:00:00");
-    return date.toLocaleDateString("fr-FR", {
-        weekday: "long",
-        day: "2-digit",
-        month: "long",
-        year: "numeric"
-    });
+  const date = new Date(dateStr + "T00:00:00");
+  return date.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
 }
 
 function normaliserHistorique(data){
-    if (Array.isArray(data)) {
-        return {
-            [dateSelectionnee]: {
-                repas: data,
-                total: data.reduce((s, item) => s + (Number(item.calories) || 0), 0)
-            }
-        };
-    }
-
-    if (data && typeof data === "object") {
-        const jours = {};
-        Object.entries(data).forEach(([date, valeur]) => {
-            const repas = Array.isArray(valeur?.repas) ? valeur.repas : (Array.isArray(valeur) ? valeur : []);
-            const poidsKg = Number(valeur?.poidsKg);
-            jours[date] = {
-                repas,
-                total: repas.reduce((s, item) => s + (Number(item.calories) || 0), 0),
-                poidsKg: valeur?.poidsKg !== null && valeur?.poidsKg !== "" && Number.isFinite(poidsKg) && poidsKg >= 0 && poidsKg <= 999.9
-                    ? poidsKg
-                    : null
-            };
-        });
-        return jours;
-    }
-
-    return {};
+  if (Array.isArray(data)) {
+    return {
+      [dateSelectionnee]: {
+        repas: data,
+        total: data.reduce((s, item) => s + (Number(item.calories) || 0), 0)
+      }
+    };
+  }
+  if (data && typeof data === "object") {
+    const jours = {};
+    Object.entries(data).forEach(([date, valeur]) => {
+      const repas = Array.isArray(valeur?.repas) ? valeur.repas : (Array.isArray(valeur) ? valeur : []);
+      const poidsKg = Number(valeur?.poidsKg);
+      jours[date] = {
+        repas,
+        total: repas.reduce((s, item) => s + (Number(item.calories) || 0), 0),
+        poidsKg: valeur?.poidsKg !== null && valeur?.poidsKg !== "" && Number.isFinite(poidsKg) && poidsKg >= 0 && poidsKg <= 999.9 ? poidsKg : null
+      };
+    });
+    return jours;
+  }
+  return {};
 }
 
 function readCookieValue(key) {
-    const match = document.cookie.match(new RegExp("(?:^|; )" + key + "=([^;]*)"));
-    return match ? decodeURIComponent(match[1]) : null;
+  const match = document.cookie.match(new RegExp("(?:^|; )" + key + "=([^;]*)"));
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
 function writeCookieValue(key, value) {
-    try {
-        document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-        return true;
-    } catch (err) {
-        console.warn("Cookie de secours indisponible", err);
-        return false;
-    }
+  try {
+    document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    return true;
+  } catch (err) {
+    console.warn("Cookie de secours indisponible", err);
+    return false;
+  }
 }
 
 function sauvegarderRepas(){
-    const payload = JSON.stringify(historiqueRepas);
-
-    try {
-        if (typeof localStorage !== "undefined") {
-            localStorage.setItem(STORAGE_KEY, payload);
-            return true;
-        }
-    } catch (err) {
-        console.warn("localStorage indisponible, fallback sur sessionStorage/cookie", err);
+  const payload = JSON.stringify(historiqueRepas);
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, payload);
+      return true;
     }
+  } catch (err) { console.warn("localStorage indisponible, fallback sur sessionStorage/cookie", err); }
 
-    try {
-        if (typeof sessionStorage !== "undefined") {
-            sessionStorage.setItem(STORAGE_KEY, payload);
-            return true;
-        }
-    } catch (err) {
-        console.warn("sessionStorage indisponible, fallback sur cookie", err);
+  try {
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem(STORAGE_KEY, payload);
+      return true;
     }
+  } catch (err) { console.warn("sessionStorage indisponible, fallback sur cookie", err); }
 
-    try {
-        writeCookieValue(STORAGE_KEY, payload);
-        return true;
-    } catch (err) {
-        console.warn("Sauvegarde impossible dans les stockages standards", err);
-    }
-
-    window.__aliCaFallbackStorage = payload;
+  try {
+    writeCookieValue(STORAGE_KEY, payload);
     return true;
+  } catch (err) { console.warn("Sauvegarde impossible dans les stockages standards", err); }
+
+  window.__aliCaFallbackStorage = payload;
+  return true;
 }
 
 function chargerRepas(){
-    const sources = [];
+  const sources = [];
+  if (typeof localStorage !== "undefined") sources.push(() => localStorage.getItem(STORAGE_KEY));
+  if (typeof sessionStorage !== "undefined") sources.push(() => sessionStorage.getItem(STORAGE_KEY));
+  sources.push(() => readCookieValue(STORAGE_KEY));
+  sources.push(() => (window.__aliCaFallbackStorage || null));
 
-    if (typeof localStorage !== "undefined") {
-        sources.push(() => localStorage.getItem(STORAGE_KEY));
+  for (const lire of sources) {
+    try {
+      const raw = lire();
+      if (!raw) continue;
+      const donnees = JSON.parse(raw);
+      historiqueRepas = normaliserHistorique(donnees);
+      if (!historiqueRepas[dateSelectionnee]) historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
+      return;
+    } catch (err) {
+      console.warn("Lecture de sauvegarde impossible, tentative suivante", err);
     }
-    if (typeof sessionStorage !== "undefined") {
-        sources.push(() => sessionStorage.getItem(STORAGE_KEY));
-    }
-    sources.push(() => readCookieValue(STORAGE_KEY));
-    sources.push(() => (window.__aliCaFallbackStorage || null));
+  }
 
-    for (const lire of sources) {
-        try {
-            const raw = lire();
-            if (!raw) continue;
-            const donnees = JSON.parse(raw);
-            historiqueRepas = normaliserHistorique(donnees);
-            if (!historiqueRepas[dateSelectionnee]) {
-                historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
-            }
-            return;
-        } catch (err) {
-            console.warn("Lecture de sauvegarde impossible, tentative suivante", err);
-        }
-    }
-
-    historiqueRepas = {};
-    historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
+  historiqueRepas = {};
+  historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
 }
 
 function getRepasDuJour(){
-    const jour = historiqueRepas[dateSelectionnee] || { repas: [] };
-    return Array.isArray(jour.repas) ? jour.repas : [];
+  const jour = historiqueRepas[dateSelectionnee] || { repas: [] };
+  return Array.isArray(jour.repas) ? jour.repas : [];
 }
 
 function setRepasDuJour(nouvelleListe){
-    const poidsKg = historiqueRepas[dateSelectionnee]?.poidsKg ?? null;
-    historiqueRepas[dateSelectionnee] = {
-        repas: nouvelleListe,
-        total: nouvelleListe.reduce((s, item) => s + (Number(item.calories) || 0), 0),
-        poidsKg
-    };
-    sauvegarderRepas();
+  const poidsKg = historiqueRepas[dateSelectionnee]?.poidsKg ?? null;
+  historiqueRepas[dateSelectionnee] = {
+    repas: nouvelleListe,
+    total: nouvelleListe.reduce((s, item) => s + (Number(item.calories) || 0), 0),
+    poidsKg
+  };
+  sauvegarderRepas();
 }
 
 function getHistoriqueTrie(){
-    return Object.entries(historiqueRepas).sort(([a], [b]) => b.localeCompare(a));
+  return Object.entries(historiqueRepas).sort(([a], [b]) => b.localeCompare(a));
 }
 
 function escapeCSV(valeur){
-    const chaine = String(valeur ?? "");
-    return `"${chaine.replace(/"/g, '""')}"`;
+  const chaine = String(valeur ?? "");
+  return `"${chaine.replace(/"/g, '""')}"`;
 }
 
 function getCsvContent(){
-    const lignes = [["date", "aliment", "quantite_g", "calories_kcal", "poids_kg"]];
-
-    getHistoriqueTrie().forEach(([dateJour, data]) => {
-        const repas = Array.isArray(data?.repas) ? data.repas : [];
-        const poidsKg = data?.poidsKg == null ? "" : Number(data.poidsKg).toFixed(1);
-        if (repas.length === 0 && poidsKg !== "") {
-            lignes.push([dateJour, "", "", "", poidsKg]);
-        }
-        repas.forEach((item) => {
-            lignes.push([
-                dateJour,
-                item.nom,
-                Number(item.quantite) || 0,
-                Number(item.calories) || 0,
-                poidsKg
-            ]);
-        });
+  const lignes = [["date", "aliment", "quantite_g", "calories_kcal", "glucides_g", "lipides_g", "proteines_g", "poids_kg"]];
+  getHistoriqueTrie().forEach(([dateJour, data]) => {
+    const repas = Array.isArray(data?.repas) ? data.repas : [];
+    const poidsKg = data?.poidsKg == null ? "" : Number(data.poidsKg).toFixed(1);
+    if (repas.length === 0 && poidsKg !== "") {
+      lignes.push([dateJour, "", "", "", "", "", "", poidsKg]);
+    }
+    repas.forEach((item) => {
+      lignes.push([
+        dateJour,
+        item.nom,
+        Number(item.quantite) || 0,
+        Number(item.calories) || 0,
+        Number(item.glucide) || 0,
+        Number(item.lipide) || 0,
+        Number(item.proteine) || 0,
+        poidsKg
+      ]);
     });
+  });
 
-    return lignes
-        .map(ligne => ligne.map(escapeCSV).join(","))
-        .join("\n");
+  return lignes.map(ligne => ligne.map(escapeCSV).join(",")).join("\n");
 }
 
 async function sauvegarderCSV(){
-    const csvContent = getCsvContent();
-    const nomFichier = "historique_repas.csv";
+  const csvContent = getCsvContent();
+  const nomFichier = "historique_repas.csv";
 
-    if (window.showDirectoryPicker) {
-        try {
-            const dossier = await window.showDirectoryPicker({ mode: "readwrite" });
-            const fichierHandle = await dossier.getFileHandle(nomFichier, { create: true });
-            const flux = await fichierHandle.createWritable();
-            await flux.write(csvContent);
-            await flux.close();
-            alert("Fichier CSV enregistré dans le dossier choisi.");
-            return;
-        }
-        catch (erreur) {
-            if (erreur && erreur.name !== "AbortError") {
-                console.warn("Dossier non sélectionné, fallback sur téléchargement.", erreur);
-            }
-        }
+  if (window.showDirectoryPicker) {
+    try {
+      const dossier = await window.showDirectoryPicker({ mode: "readwrite" });
+      const fichierHandle = await dossier.getFileHandle(nomFichier, { create: true });
+      const flux = await fichierHandle.createWritable();
+      await flux.write(csvContent);
+      await flux.close();
+      alert("Fichier CSV enregistré dans le dossier choisi.");
+      return;
+    } catch (erreur) {
+      if (erreur && erreur.name !== "AbortError") {
+        console.warn("Dossier non sélectionné, fallback sur téléchargement.", erreur);
+      }
     }
+  }
 
-    if (window.showSaveFilePicker) {
-        try {
-            const fichierHandle = await window.showSaveFilePicker({
-                suggestedName: nomFichier,
-                types: [{
-                    description: "CSV",
-                    accept: { "text/csv": [".csv"] }
-                }]
-            });
-            const flux = await fichierHandle.createWritable();
-            await flux.write(csvContent);
-            await flux.close();
-            alert("Fichier CSV enregistré.");
-            return;
-        }
-        catch (erreur) {
-            if (erreur && erreur.name !== "AbortError") {
-                console.warn("Enregistrement fichier bloqué, fallback sur téléchargement.", erreur);
-            }
-        }
+  if (window.showSaveFilePicker) {
+    try {
+      const fichierHandle = await window.showSaveFilePicker({
+        suggestedName: nomFichier,
+        types: [{ description: "CSV", accept: { "text/csv": [".csv"] } }]
+      });
+      const flux = await fichierHandle.createWritable();
+      await flux.write(csvContent);
+      await flux.close();
+      alert("Fichier CSV enregistré.");
+      return;
+    } catch (erreur) {
+      if (erreur && erreur.name !== "AbortError") {
+        console.warn("Enregistrement fichier bloqué, fallback sur téléchargement.", erreur);
+      }
     }
+  }
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const lien = document.createElement("a");
-    lien.href = url;
-    lien.download = nomFichier;
-    lien.click();
-    URL.revokeObjectURL(url);
-    alert("Fichier CSV téléchargé dans votre navigateur.");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const lien = document.createElement("a");
+  lien.href = url;
+  lien.download = nomFichier;
+  lien.click();
+  URL.revokeObjectURL(url);
+  alert("Fichier CSV téléchargé dans votre navigateur.");
 }
 
-function afficherAliments(filtre=""){
-    listeAliments.innerHTML = "";
+function afficherAliments(filtre = ""){
+  listeAliments.innerHTML = "";
+  const resultat = [...aliments]
+    .filter(aliment => (aliment.nom || "").toLowerCase().includes(filtre.toLowerCase()))
+    .sort(trierAlimentsParNom);
 
-    const resultat = [...aliments]
-        .filter(aliment => (aliment.nom || "").toLowerCase().includes(filtre.toLowerCase()))
-        .sort(trierAlimentsParNom);
+  resultat.forEach(aliment => {
+    const div = document.createElement("div");
+    div.className = "aliment";
+    const macros = ` • G ${Number(aliment.glucide || 0).toFixed(0)} • L ${Number(aliment.lipide || 0).toFixed(0)} • P ${Number(aliment.proteine || 0).toFixed(0)}`;
+    div.innerHTML = "<strong>" + aliment.nom + "</strong><br aria-hidden=\"true\">" + aliment.categorie + " • " + aliment.calories_100g + " kcal /100g" + macros;
 
-    resultat.forEach(aliment => {
-        const div = document.createElement("div");
-        div.className = "aliment";
-        const macros = ` • G ${Number(aliment.glucide || 0).toFixed(0)} • L ${Number(aliment.lipide || 0).toFixed(0)} • P ${Number(aliment.proteine || 0).toFixed(0)}`;
-        div.innerHTML = "<strong>" + aliment.nom + "</strong><br aria-hidden=\"true\">" + aliment.categorie + " • " + aliment.calories_100g + " kcal /100g" + macros;
+    div.onclick = () => {
+      document.querySelectorAll(".aliment").forEach(el => el.classList.remove("aliment-selectionne"));
+      div.classList.add("aliment-selectionne");
+      alimentSelectionne = aliment;
+      document.getElementById("selection").innerHTML = "Sélection : " + aliment.nom;
+      document.getElementById("quantite").value = aliment.portion_defaut || 100;
+    };
 
-        div.onclick = () => {
-            document.querySelectorAll(".aliment").forEach(el => el.classList.remove("aliment-selectionne"));
-            div.classList.add("aliment-selectionne");
-            alimentSelectionne = aliment;
-            document.getElementById("selection").innerHTML = "Sélection : " + aliment.nom;
-            document.getElementById("quantite").value = aliment.portion_defaut || 100;
-        };
+    if (alimentSelectionne && aliment.id === alimentSelectionne.id) div.classList.add("aliment-selectionne");
+    listeAliments.appendChild(div);
+  });
+}
 
-        if (alimentSelectionne && aliment.id === alimentSelectionne.id) {
-            div.classList.add("aliment-selectionne");
-        }
-
-        listeAliments.appendChild(div);
-    });
+function reinitialiserSelectionAliment(){
+  document.getElementById("recherche").value = "";
+  afficherAliments("");
+  if (alimentSelectionne) {
+    document.getElementById("selection").innerHTML = "Sélection : " + alimentSelectionne.nom;
+    document.getElementById("quantite").value = alimentSelectionne.portion_defaut || 100;
+  }
 }
 
 document.getElementById("recherche").addEventListener("input", function(){
-    afficherAliments(this.value);
+  afficherAliments(this.value);
 });
 
 poidsInput.addEventListener("change", function(){
-    if (!this.checkValidity()) {
-        alert("Saisissez un poids compris entre 0 et 999,9 kg avec une seule décimale au maximum.");
-        afficherRepas();
-        return;
-    }
-
-    const poidsKg = this.value === "" ? null : this.valueAsNumber;
-    historiqueRepas[dateSelectionnee].poidsKg = poidsKg;
-    if (poidsKg !== null) {
-        this.value = poidsKg.toFixed(1);
-    }
-    sauvegarderRepas();
-    afficherHistorique();
+  if (!this.checkValidity()) {
+    alert("Saisissez un poids compris entre 0 et 999,9 kg avec une seule décimale au maximum.");
+    afficherRepas();
+    return;
+  }
+  const poidsKg = this.value === "" ? null : this.valueAsNumber;
+  historiqueRepas[dateSelectionnee].poidsKg = poidsKg;
+  if (poidsKg !== null) this.value = poidsKg.toFixed(1);
+  sauvegarderRepas();
+  afficherHistorique();
 });
 
 function ajouterAuRepas(){
-    if(!alimentSelectionne){
-        alert("Sélectionnez un aliment.");
-        return;
-    }
+  if (!alimentSelectionne) { alert("Sélectionnez un aliment."); return; }
 
-    let nom = alimentSelectionne.nom;
-    let quantite = parseFloat(document.getElementById("quantite").value);
-    let calories100g = alimentSelectionne.calories_100g;
+  const nom = alimentSelectionne.nom;
+  const quantite = parseFloat(document.getElementById("quantite").value);
+  const calories100g = alimentSelectionne.calories_100g;
+  const macros = calculerMacros(alimentSelectionne, quantite);
+  const calories = (quantite * calories100g) / 100;
+  const repasDuJour = getRepasDuJour();
 
-    const calories = (quantite * calories100g) / 100;
-    const repasDuJour = getRepasDuJour();
+  repasDuJour.push({
+    nom,
+    quantite,
+    calories,
+    glucide: macros.glucide,
+    lipide: macros.lipide,
+    proteine: macros.proteine
+  });
 
-    repasDuJour.push({
-        nom: nom,
-        quantite: quantite,
-        calories: calories
-    });
-
-    setRepasDuJour(repasDuJour);
-
-    document.getElementById("recherche").value = "";
-    afficherAliments("");
-    document.getElementById("selection").innerHTML = "Sélection : " + alimentSelectionne.nom;
-    document.getElementById("quantite").value = alimentSelectionne.portion_defaut || 100;
-
-    afficherRepas();
+  setRepasDuJour(repasDuJour);
+  reinitialiserSelectionAliment();
+  afficherRepas();
 }
 
 function afficherRepas(){
-    const zone = document.getElementById("repas");
-    zone.innerHTML = "";
+  const zone = document.getElementById("repas");
+  zone.innerHTML = "";
 
-    const jour = historiqueRepas[dateSelectionnee];
-    poidsInput.value = jour?.poidsKg ?? "";
-    const repasDuJour = getRepasDuJour();
-    let total = 0;
+  const jour = historiqueRepas[dateSelectionnee];
+  poidsInput.value = jour?.poidsKg ?? "";
+  const repasDuJour = getRepasDuJour();
+  let total = 0;
 
-    repasDuJour.forEach((item,index) => {
-        total += Number(item.calories) || 0;
+  repasDuJour.forEach((item, index) => {
+    total += Number(item.calories) || 0;
 
-        const ligne = document.createElement("div");
-        ligne.className = "ligneRepas";
+    const ligne = document.createElement("div");
+    ligne.className = "ligneRepas";
 
-        ligne.innerHTML = `
-        <div>
+    ligne.innerHTML = `
+      <div>
         <strong>${item.nom}</strong><br>
-        ${item.quantite} g
+        ${Number(item.quantite) || 0} g
         - ${(Number(item.calories) || 0).toFixed(0)} kcal
-        </div>
+        <div class="info">G ${(Number(item.glucide) || 0).toFixed(0)} • L ${(Number(item.lipide) || 0).toFixed(0)} • P ${(Number(item.proteine) || 0).toFixed(0)}</div>
+      </div>
+      <button class="btnSupprimer" onclick="supprimer(${index})">✕</button>
+    `;
 
-        <button class="btnSupprimer" onclick="supprimer(${index})">✕</button>
-        `;
+    zone.appendChild(ligne);
+  });
 
-        zone.appendChild(ligne);
-    });
-
-    document.getElementById("total").innerHTML = total.toFixed(0) + " kcal";
-    afficherHistorique();
+  document.getElementById("total").innerHTML = total.toFixed(0) + " kcal";
+  afficherHistorique();
 }
 
 function afficherHistorique(){
-    const historiqueZone = document.getElementById("historiqueJours");
-    const jours = getHistoriqueTrie();
+  const historiqueZone = document.getElementById("historiqueJours");
+  const jours = getHistoriqueTrie();
 
-    if (!jours.length) {
-        historiqueZone.innerHTML = "Aucun repas enregistré.";
-        return;
-    }
+  if (!jours.length) {
+    historiqueZone.innerHTML = "Aucun repas enregistré.";
+    return;
+  }
 
-    historiqueZone.innerHTML = jours
-        .map(([dateJour, data]) => {
-            const items = Array.isArray(data?.repas) ? data.repas : [];
-            const totalJour = items.reduce((s, item) => s + (Number(item.calories) || 0), 0);
-            const poidsJour = data?.poidsKg == null ? "" : ` • ${Number(data.poidsKg).toFixed(1)} kg`;
-            const actif = dateJour === dateSelectionnee ? "<strong>•</strong> " : "";
-            return `
-                <div class="historiqueJour">
-                    <div>${actif}${formaterDate(dateJour)}</div>
-                    <div>${items.length} aliments • ${totalJour.toFixed(0)} kcal${poidsJour}</div>
-                </div>
-            `;
-        })
-        .join("");
+  historiqueZone.innerHTML = jours
+    .map(([dateJour, data]) => {
+      const items = Array.isArray(data?.repas) ? data.repas : [];
+      const totalJour = items.reduce((s, item) => s + (Number(item.calories) || 0), 0);
+      const poidsJour = data?.poidsKg == null ? "" : ` • ${Number(data.poidsKg).toFixed(1)} kg`;
+      const actif = dateJour === dateSelectionnee ? "<strong>•</strong> " : "";
+      return `
+        <div class="historiqueJour">
+          <div>${actif}${formaterDate(dateJour)}</div>
+          <div>${items.length} aliments • ${totalJour.toFixed(0)} kcal${poidsJour}</div>
+        </div>
+      `;
+    })
+    .join("");
 }
 
 function supprimer(index){
-    const repasDuJour = getRepasDuJour();
-    repasDuJour.splice(index, 1);
-    setRepasDuJour(repasDuJour);
-    afficherRepas();
+  const repasDuJour = getRepasDuJour();
+  repasDuJour.splice(index, 1);
+  setRepasDuJour(repasDuJour);
+  afficherRepas();
 }
 
 function exporterRepasJSON(){
-    const repasJour = getRepasDuJour();
-    const donnees = {
-        date: dateSelectionnee,
-        repas: repasJour,
-        total: repasJour.reduce((sum, item) => sum + (Number(item.calories) || 0), 0),
-        poidsKg: historiqueRepas[dateSelectionnee]?.poidsKg ?? null
-    };
+  const repasJour = getRepasDuJour();
+  const donnees = {
+    date: dateSelectionnee,
+    repas: repasJour.map(item => ({
+      nom: item.nom,
+      quantite: Number(item.quantite) || 0,
+      calories: Number(item.calories) || 0,
+      glucide: Number(item.glucide) || 0,
+      lipide: Number(item.lipide) || 0,
+      proteine: Number(item.proteine) || 0
+    })),
+    total: repasJour.reduce((sum, item) => sum + (Number(item.calories) || 0), 0),
+    poidsKg: historiqueRepas[dateSelectionnee]?.poidsKg ?? null
+  };
 
-    const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
-    const lien = document.createElement("a");
-    lien.href = URL.createObjectURL(blob);
-    const date = new Date().toISOString().slice(0,10);
-    lien.download = "Repas_" + date + ".json";
-    lien.click();
-    URL.revokeObjectURL(lien.href);
+  const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
+  const lien = document.createElement("a");
+  lien.href = URL.createObjectURL(blob);
+  const date = new Date().toISOString().slice(0,10);
+  lien.download = "Repas_" + date + ".json";
+  lien.click();
+  URL.revokeObjectURL(lien.href);
 }
 
 function importerRepasJSON(event){
-    const fichier = event.target.files[0];
-    if(!fichier){
+  const fichier = event.target.files[0];
+  if (!fichier) return;
+
+  const lecteur = new FileReader();
+  lecteur.onload = function(e){
+    try {
+      const data = JSON.parse(e.target.result);
+
+      if (data && typeof data === "object" && data.repasParJour) {
+        historiqueRepas = normaliserHistorique(data.repasParJour);
+      } else if (Array.isArray(data.repas)) {
+        historiqueRepas = {
+          [dateSelectionnee]: {
+            repas: data.repas.map(item => ({
+              nom: item.nom,
+              quantite: Number(item.quantite) || 0,
+              calories: Number(item.calories) || 0,
+              glucide: Number(item.glucide) || 0,
+              lipide: Number(item.lipide) || 0,
+              proteine: Number(item.proteine) || 0
+            })),
+            total: data.repas.reduce((s, item) => s + (Number(item.calories) || 0), 0)
+          }
+        };
+      } else if (Array.isArray(data)) {
+        historiqueRepas = {
+          [dateSelectionnee]: {
+            repas: data.map(item => ({
+              nom: item.nom,
+              quantite: Number(item.quantite) || 0,
+              calories: Number(item.calories) || 0,
+              glucide: Number(item.glucide) || 0,
+              lipide: Number(item.lipide) || 0,
+              proteine: Number(item.proteine) || 0
+            })),
+            total: data.reduce((s, item) => s + (Number(item.calories) || 0), 0)
+          }
+        };
+      } else {
+        alert("Format JSON invalide.");
         return;
+      }
+
+      if (!historiqueRepas[dateSelectionnee]) historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
+
+      sauvegarderRepas();
+      afficherRepas();
+      alert("Repas importé avec succès.");
+    } catch (err) {
+      console.error(err);
+      alert("Erreur de lecture du fichier JSON.");
     }
+  };
 
-    const lecteur = new FileReader();
-    lecteur.onload = function(e){
-        try {
-            const data = JSON.parse(e.target.result);
-
-            if (data && typeof data === "object" && data.repasParJour) {
-                historiqueRepas = normaliserHistorique(data.repasParJour);
-            }
-            else if (Array.isArray(data.repas)) {
-                historiqueRepas = {
-                    [dateSelectionnee]: { repas: data.repas, total: data.repas.reduce((s, item) => s + (Number(item.calories) || 0), 0) }
-                };
-            }
-            else if (Array.isArray(data)) {
-                historiqueRepas = {
-                    [dateSelectionnee]: { repas: data, total: data.reduce((s, item) => s + (Number(item.calories) || 0), 0) }
-                };
-            }
-            else {
-                alert("Format JSON invalide.");
-                return;
-            }
-
-            if (!historiqueRepas[dateSelectionnee]) {
-                historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
-            }
-
-            sauvegarderRepas();
-            afficherRepas();
-            alert("Repas importé avec succès.");
-        }
-        catch(err){
-            console.error(err);
-            alert("Erreur de lecture du fichier JSON.");
-        }
-    };
-
-    lecteur.readAsText(fichier);
+  lecteur.readAsText(fichier);
 }
 
 window.addEventListener("pageshow", sauvegarderRepas);
 document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "hidden") {
-        sauvegarderRepas();
-    }
+  if (document.visibilityState === "hidden") sauvegarderRepas();
 });
 window.addEventListener("beforeunload", sauvegarderRepas);
 
 chargerRepas();
-afficherAliments();
+afficherAliments("");
 afficherRepas();
 console.log("Nombre d'aliments :", aliments.length);
 </script>
-
 </body>
 </html>
