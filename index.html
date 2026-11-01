@@ -195,9 +195,9 @@ button:active{
     <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
     <input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)">
     <input type="number" id="kcalPerso" min="0" step="1" placeholder="kcal / 100g">
-    <input type="number" id="glucidePerso" min="0" step="0.1" placeholder="Glucides / 100g (g)">
-    <input type="number" id="lipidePerso" min="0" step="0.1" placeholder="Lipides / 100g (g)">
-    <input type="number" id="proteinePerso" min="0" step="0.1" placeholder="Protéines / 100g (g)">
+    <input type="number" id="glucidePerso" min="0" step="0.1" value="10" placeholder="Glucides / 100g (g)">
+    <input type="number" id="lipidePerso" min="0" step="0.1" value="20" placeholder="Lipides / 100g (g)">
+    <input type="number" id="proteinePerso" min="0" step="0.1" value="30" placeholder="Protéines / 100g (g)">
     <button onclick="ajouterAlimentPerso()">Ajouter à la liste</button>
 </div>
 
@@ -240,11 +240,15 @@ function normaliserAliment(aliment) {
         return aliment;
     }
 
+    const glucide = Number(aliment.glucide);
+    const lipide = Number(aliment.lipide);
+    const proteine = Number(aliment.proteine);
+
     return {
         ...aliment,
-        glucide: Number(aliment.glucide) || 0,
-        lipide: Number(aliment.lipide) || 0,
-        proteine: Number(aliment.proteine) || 0
+        glucide: Number.isFinite(glucide) && glucide >= 0 ? glucide : 10,
+        lipide: Number.isFinite(lipide) && lipide >= 0 ? lipide : 20,
+        proteine: Number.isFinite(proteine) && proteine >= 0 ? proteine : 30
     };
 }
 
@@ -372,9 +376,9 @@ function ajouterAlimentPerso(){
     const nom = (nomInput.value || "").trim();
     const categorie = (categorieInput.value || "Personnalisé").trim() || "Personnalisé";
     const kcal = Number(kcalInput.value);
-    const glucide = Number(glucideInput.value) || 0;
-    const lipide = Number(lipideInput.value) || 0;
-    const proteine = Number(proteineInput.value) || 0;
+    const glucide = Number(glucideInput.value);
+    const lipide = Number(lipideInput.value);
+    const proteine = Number(proteineInput.value);
 
     if (!nom) {
         alert("Saisis le nom de l'aliment.");
@@ -393,9 +397,9 @@ function ajouterAlimentPerso(){
         portion_defaut: 100,
         unite: "g",
         calories_100g: kcal,
-        glucide,
-        lipide,
-        proteine
+        glucide: Number.isFinite(glucide) && glucide >= 0 ? glucide : 10,
+        lipide: Number.isFinite(lipide) && lipide >= 0 ? lipide : 20,
+        proteine: Number.isFinite(proteine) && proteine >= 0 ? proteine : 30
     };
 
     aliments.push(nouvelAliment);
@@ -408,9 +412,9 @@ function ajouterAlimentPerso(){
     nomInput.value = "";
     categorieInput.value = "";
     kcalInput.value = "";
-    glucideInput.value = "";
-    lipideInput.value = "";
-    proteineInput.value = "";
+    glucideInput.value = "10";
+    lipideInput.value = "20";
+    proteineInput.value = "30";
 
     document.getElementById("recherche").value = "";
     afficherAliments();
