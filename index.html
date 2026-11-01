@@ -451,6 +451,14 @@ function getCsvFileName(){
   return `historique_repas_${datePart}-${timePart}.csv`;
 }
 
+function getJsonFileName(){
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+  const timePart = `${pad(now.getHours())}${pad(now.getMinutes())}`;
+  return `Repas_${datePart}-${timePart}.json`;
+}
+
 async function sauvegarderCSV(){
   const csvContent = getCsvContent();
   const nomFichier = getCsvFileName();
@@ -638,7 +646,7 @@ function supprimer(index){
   afficherRepas();
 }
 
-function exporterRepasJSON(){
+async function exporterRepasJSON(){
   const repasJour = getRepasDuJour();
   const donnees = {
     date: dateSelectionnee,
@@ -654,13 +662,51 @@ function exporterRepasJSON(){
     poidsKg: historiqueRepas[dateSelectionnee]?.poidsKg ?? null
   };
 
-  const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
+  const jsonContent = JSON.stringify(donnees, null, 2);
+  const nomFichier = getJsonFileName();
+
+  if (window.showDirectoryPicker) {
+    try {
+      const dossier = await window.showDirectoryPicker({ mode: "readwrite" });
+      const fichierHandle = await dossier.getFileHandle(nomFichier, { create: true });
+      const flux = await fichierHandle.createWritable();
+      await flux.write(jsonContent);
+      await flux.close();
+      alert("Fichier JSON enregistré dans le dossier choisi.");
+      return;
+    } catch (erreur) {
+      if (erreur && erreur.name !== "AbortError") {
+        console.warn("Dossier non sélectionné, fallback sur téléchargement.", erreur);
+      }
+    }
+  }
+
+  if (window.showSaveFilePicker) {
+    try {
+      const fichierHandle = await window.showSaveFilePicker({
+        suggestedName: nomFichier,
+        types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
+      });
+      const flux = await fichierHandle.createWritable();
+      await flux.write(jsonContent);
+      await flux.close();
+      alert("Fichier JSON enregistré.");
+      return;
+    } catch (erreur) {
+      if (erreur && erreur.name !== "AbortError") {
+        console.warn("Enregistrement fichier bloqué, fallback sur téléchargement.", erreur);
+      }
+    }
+  }
+
+  const blob = new Blob([jsonContent], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
   const lien = document.createElement("a");
-  lien.href = URL.createObjectURL(blob);
-  const date = new Date().toISOString().slice(0,10);
-  lien.download = "Repas_" + date + ".json";
+  lien.href = url;
+  lien.download = nomFichier;
   lien.click();
-  URL.revokeObjectURL(lien.href);
+  URL.revokeObjectURL(url);
+  alert("Fichier JSON téléchargé dans votre navigateur.");
 }
 
 function importerRepasJSON(event){
