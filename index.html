@@ -594,6 +594,10 @@ function afficherAliments(filtre=""){
             document.getElementById("quantite").value = aliment.portion_defaut || 100;
         };
 
+        if (alimentSelectionne && aliment.id === alimentSelectionne.id) {
+            div.classList.add("aliment-selectionne");
+        }
+
         listeAliments.appendChild(div);
     });
 }
@@ -638,6 +642,12 @@ function ajouterAuRepas(){
     });
 
     setRepasDuJour(repasDuJour);
+
+    document.getElementById("recherche").value = "";
+    afficherAliments("");
+    document.getElementById("selection").innerHTML = "Sélection : " + alimentSelectionne.nom;
+    document.getElementById("quantite").value = alimentSelectionne.portion_defaut || 100;
+
     afficherRepas();
 }
 
