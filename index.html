@@ -181,16 +181,6 @@ button:active{
 </div>
 
 <div class="card">
-
-</div>
-
-<div class="card">
-    <div id="total" class="total">
-    0 kcal
-    </div>
-</div>
-
-<div class="card">
     <label>Aliment personnalisé</label>
     <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
     <input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)">
@@ -202,33 +192,20 @@ button:active{
 </div>
 
 <div class="card">
+    <label>Recherche</label>
+    <input type="text" id="recherche" placeholder="Exemple : pomme">
 
-<label>Recherche</label>
+    <div id="selection" class="selection">Aucun aliment sélectionné</div>
+    <div id="listeAliments"></div>
 
-<input
-    type="text"
-    id="recherche"
-    placeholder="Exemple : pomme">
+    <label>Quantité (g)</label>
+    <input type="number" id="quantite" value="100" min="1">
 
-<div
-    id="selection"
-    class="selection">
-Aucun aliment sélectionné
+    <button onclick="ajouterAuRepas()">Ajouter au repas</button>
 </div>
 
-<div id="listeAliments"></div>
-
-<label>Quantité (g)</label>
-
-<input type="number"
-    id="quantite"
-    value="100"
-    min="1">
-
-<button onclick="ajouterAuRepas()">
-Ajouter au repas
-</button>
-
+<div class="card">
+    <div id="total" class="total">0 kcal</div>
 </div>
 
 </div>
@@ -636,7 +613,7 @@ async function sauvegarderCSV(){
 }
 
 function afficherAliments(filtre=""){
-    listeAliments.innerHTML="";
+    listeAliments.innerHTML = "";
 
     const resultat = [...aliments]
         .filter(aliment => (aliment.nom || "").toLowerCase().includes(filtre.toLowerCase()))
@@ -649,13 +626,9 @@ function afficherAliments(filtre=""){
         div.innerHTML = "<strong>" + aliment.nom + "</strong><br aria-hidden=\"true\">" + aliment.categorie + " • " + aliment.calories_100g + " kcal /100g" + macros;
 
         div.onclick = () => {
-            document.querySelectorAll(".aliment").forEach(el =>
-                el.classList.remove("aliment-selectionne")
-            );
-
+            document.querySelectorAll(".aliment").forEach(el => el.classList.remove("aliment-selectionne"));
             div.classList.add("aliment-selectionne");
             alimentSelectionne = aliment;
-
             document.getElementById("selection").innerHTML = "Sélection : " + aliment.nom;
             document.getElementById("quantite").value = aliment.portion_defaut || 100;
         };
@@ -694,32 +667,6 @@ function ajouterAuRepas(){
     let quantite = parseFloat(document.getElementById("quantite").value);
     let calories100g = alimentSelectionne.calories_100g;
 
-    if(nom === "autreAliment"){
-        const nouveauNom = prompt("Nom de l'aliment :", "");
-
-        if(!nouveauNom){
-            return;
-        }
-
-        nom = nouveauNom.trim();
-
-        const nouveauxGrammes = prompt("Quantité (g) :", quantite);
-
-        if(nouveauxGrammes === null || isNaN(nouveauxGrammes)){
-            return;
-        }
-
-        quantite = parseFloat(nouveauxGrammes);
-
-        const nouvellesKcal = prompt("Calories pour 100 g :", calories100g);
-
-        if(nouvellesKcal === null || isNaN(nouvellesKcal)){
-            return;
-        }
-
-        calories100g = parseFloat(nouvellesKcal);
-    }
-
     const calories = (quantite * calories100g) / 100;
     const repasDuJour = getRepasDuJour();
 
@@ -755,11 +702,7 @@ function afficherRepas(){
         - ${(Number(item.calories) || 0).toFixed(0)} kcal
         </div>
 
-        <button
-        class="btnSupprimer"
-        onclick="supprimer(${index})">
-        ✕
-        </button>
+        <button class="btnSupprimer" onclick="supprimer(${index})">✕</button>
         `;
 
         zone.appendChild(ligne);
@@ -821,13 +764,11 @@ function exporterRepasJSON(){
 
 function importerRepasJSON(event){
     const fichier = event.target.files[0];
-
     if(!fichier){
         return;
     }
 
     const lecteur = new FileReader();
-
     lecteur.onload = function(e){
         try {
             const data = JSON.parse(e.target.result);
