@@ -314,6 +314,10 @@ const CUSTOM_FOODS_KEY = "ali-ca-custom-foods";
 const listeAliments = document.getElementById("listeAliments");
 const poidsInput = document.getElementById("poidsKg");
 
+function trierAlimentsParNom(alimentA, alimentB) {
+    return String(alimentA.nom || "").localeCompare(String(alimentB.nom || ""), "fr", { sensitivity: "base" });
+}
+
 function chargerAlimentsPerso(){
     try {
         if (typeof localStorage === "undefined") {
@@ -370,6 +374,7 @@ function ajouterAlimentPerso(){
     };
 
     aliments.push(nouvelAliment);
+    aliments.sort(trierAlimentsParNom);
     sauvegarderAlimentsPerso();
 
     alimentSelectionne = nouvelAliment;
@@ -383,7 +388,7 @@ function ajouterAlimentPerso(){
     afficherAliments();
 }
 
-aliments = aliments.concat(chargerAlimentsPerso());
+aliments = aliments.concat(chargerAlimentsPerso()).sort(trierAlimentsParNom);
 
 function formaterDate(dateStr){
     const date = new Date(dateStr + "T00:00:00");
@@ -607,9 +612,9 @@ async function sauvegarderCSV(){
 function afficherAliments(filtre=""){
     listeAliments.innerHTML="";
 
-    const resultat = aliments.filter(aliment =>
-        aliment.nom.toLowerCase().includes(filtre.toLowerCase())
-    );
+    const resultat = [...aliments]
+        .filter(aliment => aliment.nom.toLowerCase().includes(filtre.toLowerCase()))
+        .sort(trierAlimentsParNom);
 
     resultat.forEach(aliment => {
         const div = document.createElement("div");
