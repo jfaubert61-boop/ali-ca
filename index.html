@@ -59,14 +59,36 @@ button{
     background:#007AFF;
 }
 button:active{ opacity:0.8; }
-#listeAliments{ margin-top:10px; border-top:1px solid #eee; }
+#listeAliments{
+    margin-top:10px;
+    border-top:1px solid #eee;
+    max-height:min(52vh, 360px);
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding-right:6px;
+    scroll-behavior:smooth;
+}
+#listeAliments::-webkit-scrollbar {
+    width:8px;
+}
+#listeAliments::-webkit-scrollbar-track {
+    background:#f1f1f1;
+    border-radius:8px;
+}
+#listeAliments::-webkit-scrollbar-thumb {
+    background:#c7c7cc;
+    border-radius:8px;
+}
 .aliment{
     padding:10px 8px;
     border-bottom:1px solid #eee;
     cursor:pointer;
     font-size:13px;
+    line-height:1.35;
+    transition:background 0.15s ease, transform 0.15s ease;
 }
-.aliment-selectionne{ background:#d6e9ff; }
+.aliment:hover{ background:#f7f9ff; }
+.aliment-selectionne{ background:#d6e9ff; border-radius:6px; }
 .selection{
     margin-top:10px;
     color:#007AFF;
@@ -105,6 +127,15 @@ button:active{ opacity:0.8; }
     font-size:12px;
 }
 .historiqueJour:last-child { border-bottom:none; }
+@media (max-width: 480px) {
+    #listeAliments{
+        max-height:40vh;
+    }
+    .aliment{
+        font-size:12.5px;
+        padding:9px 6px;
+    }
+}
 </style>
 </head>
 <body>
@@ -180,36 +211,90 @@ function calculerMacros(aliment, quantite) {
 }
 
 const BASE_ALIMENTS = [
-  { "id": 1, "nom": "Abricot sec", "categorie": "Fruit sec", "portion_defaut": 100, "unite": "g", "calories_100g": 276, "glucide": 55, "lipide": 0, "proteine": 4.8 },
-  { "id": 2, "nom": "Avoine", "categorie": "Céréales", "portion_defaut": 100, "unite": "g", "calories_100g": 381, "glucide": 63, "lipide": 7, "proteine": 13 },
-  { "id": 3, "nom": "Banane", "categorie": "Fruit", "portion_defaut": 100, "unite": "g", "calories_100g": 90, "glucide": 19.7, "lipide": 0.2, "proteine": 1.1 },
-  { "id": 4, "nom": "Beurre", "categorie": "Corps gras", "portion_defaut": 10, "unite": "g", "calories_100g": 745, "glucide": 0.6, "lipide": 82.5, "proteine": 0.4 },
-  { "id": 5, "nom": "Carotte", "categorie": "Légume", "portion_defaut": 100, "unite": "g", "calories_100g": 42, "glucide": 7.6, "lipide": 0.4, "proteine": 0.6 },
-  { "id": 6, "nom": "Cervelas", "categorie": "Charcuterie", "portion_defaut": 100, "unite": "g", "calories_100g": 250, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 7, "nom": "Chocolat noir", "categorie": "Dessert", "portion_defaut": 100, "unite": "g", "calories_100g": 593, "glucide": 41, "lipide": 43, "proteine": 8.7 },
-  { "id": 8, "nom": "Chou-fleur", "categorie": "Légume", "portion_defaut": 100, "unite": "g", "calories_100g": 25, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 9, "nom": "Croissant", "categorie": "Boulangerie", "portion_defaut": 70, "unite": "g", "calories_100g": 432, "glucide": 43.5, "lipide": 24.2, "proteine": 8.7 },
-  { "id": 10, "nom": "Figue", "categorie": "Fruit sec", "portion_defaut": 100, "unite": "g", "calories_100g": 276, "glucide": 58, "lipide": 1.2, "proteine": 3.2 },
-  { "id": 11, "nom": "Fromage", "categorie": "Produit laitier", "portion_defaut": 100, "unite": "g", "calories_100g": 394, "glucide": 0, "lipide": 32, "proteine": 26.4 },
-  { "id": 12, "nom": "Huile d'olive", "categorie": "Corps gras", "portion_defaut": 5, "unite": "g", "calories_100g": 900, "glucide": 0, "lipide": 100, "proteine": 0 },
-  { "id": 13, "nom": "Jambon blanc", "categorie": "Viande", "portion_defaut": 100, "unite": "g", "calories_100g": 134, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 14, "nom": "Lait", "categorie": "Produit laitier", "portion_defaut": 100, "unite": "g", "calories_100g": 68, "glucide": 4.6, "lipide": 4.1, "proteine": 3.2 },
-  { "id": 15, "nom": "Mandarine", "categorie": "Fruit", "portion_defaut": 90, "unite": "g", "calories_100g": 53, "glucide": 12, "lipide": 0.3, "proteine": 0 },
-  { "id": 16, "nom": "Miel", "categorie": "Miel - Confiture", "portion_defaut": 7, "unite": "g", "calories_100g": 306, "glucide": 76, "lipide": 0, "proteine": 0.4 },
-  { "id": 17, "nom": "Myrtille", "categorie": "Fruit", "portion_defaut": 100, "unite": "g", "calories_100g": 51, "glucide": 10.6, "lipide": 0.2, "proteine": 0.9 },
-  { "id": 18, "nom": "Noix de cajou", "categorie": "Fruit sec", "portion_defaut": 20, "unite": "g", "calories_100g": 592, "glucide": 27, "lipide": 45, "proteine": 18 },
-  { "id": 19, "nom": "Oeuf", "categorie": "Oeuf", "portion_defaut": 100, "unite": "g", "calories_100g": 135, "glucide": 0.3, "lipide": 9.6, "proteine": 11.5 },
-  { "id": 20, "nom": "Orange", "categorie": "Fruit", "portion_defaut": 100, "unite": "g", "calories_100g": 47, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 21, "nom": "Pain blanc", "categorie": "Pain", "portion_defaut": 100, "unite": "g", "calories_100g": 260, "glucide": 47, "lipide": 1, "proteine": 9 },
-  { "id": 22, "nom": "Pâtes crues", "categorie": "Pâtes", "portion_defaut": 100, "unite": "g", "calories_100g": 130, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 23, "nom": "Pomme", "categorie": "Fruit", "portion_defaut": 100, "unite": "g", "calories_100g": 52, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 24, "nom": "Poulet filet", "categorie": "Viande", "portion_defaut": 100, "unite": "g", "calories_100g": 107, "glucide": 0, "lipide": 1, "proteine": 24.6 },
-  { "id": 25, "nom": "Riz cuit", "categorie": "Féculent", "portion_defaut": 100, "unite": "g", "calories_100g": 130, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 26, "nom": "Salade verte", "categorie": "Salades", "portion_defaut": 100, "unite": "g", "calories_100g": 15, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 27, "nom": "Sardine", "categorie": "Poisson", "portion_defaut": 100, "unite": "g", "calories_100g": 180, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 28, "nom": "Tomate", "categorie": "Légume", "portion_defaut": 150, "unite": "g", "calories_100g": 22, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 29, "nom": "Yogourt nature", "categorie": "Produit laitier", "portion_defaut": 100, "unite": "g", "calories_100g": 66, "glucide": 10, "lipide": 20, "proteine": 30 },
-  { "id": 30, "nom": "Zwiebach", "categorie": "Pain", "portion_defaut": 6, "unite": "g", "calories_100g": 420, "glucide": 10, "lipide": 20, "proteine": 30 }
+  {"id":1,"nom":"Abricot sec","categorie":"Fruit sec","portion_defaut":100,"unite":"g","calories_100g":276,"glucide":55,"lipide":0,"proteine":4.8},
+  {"id":2,"nom":"Accompagement choux-poire-marron-sauce","categorie":"Assiette","portion_defaut":150,"unite":"g","calories_100g":200,"glucide":35,"lipide":1.3,"proteine":2.5},
+  {"id":3,"nom":"After Eight (8.3g / pce)","categorie":"Dessert","portion_defaut":8,"unite":"g","calories_100g":426,"glucide":73,"lipide":13,"proteine":2.1},
+  {"id":4,"nom":"Avoine50-yog60-pamplem05","categorie":"Céréales","portion_defaut":100,"unite":"g","calories_100g":381,"glucide":63,"lipide":7,"proteine":13},
+  {"id":5,"nom":"Banane 90-100g","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":90,"glucide":19.7,"lipide":0.2,"proteine":1.1},
+  {"id":6,"nom":"Bar filet","categorie":"Poisson","portion_defaut":100,"unite":"g","calories_100g":124,"glucide":0,"lipide":5.3,"proteine":19.1},
+  {"id":7,"nom":"Beurre 1 cc=6g    1cs=19g","categorie":"Corps gras","portion_defaut":6,"unite":"g","calories_100g":745,"glucide":0.6,"lipide":82.5,"proteine":0.4},
+  {"id":8,"nom":"Biscuit Lotus Biscoff 7g 38 kcal)","categorie":"Biscuit sucre-sel","portion_defaut":100,"unite":"g","calories_100g":484,"glucide":72.6,"lipide":19,"proteine":4.9},
+  {"id":9,"nom":"Biscuit Palmier 7g","categorie":"Biscuit sucre-sel","portion_defaut":100,"unite":"g","calories_100g":481,"glucide":69,"lipide":19,"proteine":7.5},
+  {"id":10,"nom":"Boeuf cote - entrecote (600g de chair 900 avec os)","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":280,"glucide":0,"lipide":4.5,"proteine":24},
+  {"id":11,"nom":"Camenbert Rustique","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":268,"glucide":1,"lipide":20,"proteine":21},
+  {"id":12,"nom":"Canapé @Evelyne diamètre 5cm, 30g","categorie":"Sandwich","portion_defaut":100,"unite":"g","calories_100g":80,"glucide":4,"lipide":5,"proteine":6},
+  {"id":13,"nom":"Carotte crue","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":42,"glucide":7.6,"lipide":0.4,"proteine":0.6},
+  {"id":14,"nom":"Carotte cuite","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":42,"glucide":7.6,"lipide":0.1,"proteine":0.6},
+  {"id":15,"nom":"Cervelas","categorie":"Charcuterie","portion_defaut":100,"unite":"g","calories_100g":250,"glucide":10,"lipide":20,"proteine":30},
+  {"id":16,"nom":"Cheval Entrecote","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":118,"glucide":10,"lipide":20,"proteine":30},
+  {"id":17,"nom":"Chevreuil","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":105,"glucide":0,"lipide":1.9,"proteine":22},
+  {"id":18,"nom":"Chips","categorie":"Biscuit sucre-sel","portion_defaut":100,"unite":"g","calories_100g":500,"glucide":10,"lipide":20,"proteine":30},
+  {"id":19,"nom":"Chocolat Lindt noisette 1 bare 30g","categorie":"Dessert","portion_defaut":100,"unite":"g","calories_100g":593,"glucide":41,"lipide":43,"proteine":8.7},
+  {"id":20,"nom":"Chou-fleur","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":25,"glucide":10,"lipide":20,"proteine":30},
+  {"id":21,"nom":"Confiture abricot 80% sucre, 1cs 20g","categorie":"Miel - Confiture","portion_defaut":20,"unite":"g","calories_100g":260,"glucide":10,"lipide":20,"proteine":30},
+  {"id":22,"nom":"Croissant de Tête de Course","categorie":"Boulangerie","portion_defaut":70,"unite":"g","calories_100g":432,"glucide":43.5,"lipide":24.2,"proteine":8.7},
+  {"id":23,"nom":"Delice (@Coeur des Saveurs 66g)","categorie":"Boulangerie","portion_defaut":100,"unite":"g","calories_100g":190,"glucide":10,"lipide":20,"proteine":30},
+  {"id":24,"nom":"Figue 16g","categorie":"Fruit sec","portion_defaut":16,"unite":"g","calories_100g":276,"glucide":58,"lipide":1.2,"proteine":3.2},
+  {"id":25,"nom":"Flocon avoine","categorie":"Céréales","portion_defaut":100,"unite":"g","calories_100g":350,"glucide":10,"lipide":20,"proteine":30},
+  {"id":26,"nom":"Flute","categorie":"Biscuit sucre-sel","portion_defaut":100,"unite":"g","calories_100g":465,"glucide":56,"lipide":21,"proteine":13},
+  {"id":27,"nom":"Foie de boeuf","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":142,"glucide":5.3,"lipide":4.3,"proteine":20.5},
+  {"id":28,"nom":"Fondue fromage/vin 100/40","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":415,"glucide":10,"lipide":20,"proteine":30},
+  {"id":29,"nom":"Fruits rouge","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":42,"glucide":6.3,"lipide":0.5,"proteine":1.2},
+  {"id":30,"nom":"Glace boule 50mm 60g","categorie":"Dessert","portion_defaut":100,"unite":"g","calories_100g":200,"glucide":10,"lipide":20,"proteine":30},
+  {"id":31,"nom":"Gruyere","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":394,"glucide":0,"lipide":32,"proteine":26.4},
+  {"id":32,"nom":"Haricots","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":30,"glucide":10,"lipide":20,"proteine":30},
+  {"id":33,"nom":"Huile Olive 1cc=5g   1cs=15g","categorie":"Corps gras","portion_defaut":5,"unite":"g","calories_100g":900,"glucide":0,"lipide":100,"proteine":0},
+  {"id":34,"nom":"Jambon blanc","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":134,"glucide":10,"lipide":20,"proteine":30},
+  {"id":35,"nom":"Jus pamplemousse","categorie":"Jus de Fruit","portion_defaut":100,"unite":"g","calories_100g":40,"glucide":10,"lipide":20,"proteine":30},
+  {"id":36,"nom":"Kirsch 20cl = 20gr","categorie":"Alcool","portion_defaut":100,"unite":"g","calories_100g":250,"glucide":10,"lipide":20,"proteine":30},
+  {"id":37,"nom":"Lait","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":68,"glucide":4.6,"lipide":4.1,"proteine":3.2},
+  {"id":38,"nom":"Mandarine","categorie":"Fruit","portion_defaut":90,"unite":"g","calories_100g":53,"glucide":12,"lipide":0.3,"proteine":0},
+  {"id":39,"nom":"Merlu","categorie":"Poisson","portion_defaut":100,"unite":"g","calories_100g":75,"glucide":10,"lipide":20,"proteine":30},
+  {"id":40,"nom":"Miel (1cc rase = 7g ; 1cs =21g)","categorie":"Miel - Confiture","portion_defaut":7,"unite":"g","calories_100g":306,"glucide":76,"lipide":0,"proteine":0.4},
+  {"id":41,"nom":"Mortadelle Regina (Coop)","categorie":"Charcuterie","portion_defaut":100,"unite":"g","calories_100g":298,"glucide":0,"lipide":26,"proteine":16},
+  {"id":42,"nom":"Myrtilles","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":51,"glucide":10.6,"lipide":0.2,"proteine":0.9},
+  {"id":43,"nom":"Nem Rouleaux Légume de RoseMarie 44g","categorie":"Assiette","portion_defaut":44,"unite":"g","calories_100g":210,"glucide":115,"lipide":43,"proteine":15},
+  {"id":44,"nom":"Noix de Cajou","categorie":"Fruit sec","portion_defaut":20,"unite":"g","calories_100g":592,"glucide":27,"lipide":45,"proteine":18},
+  {"id":45,"nom":"Oeuf 60g jaune 19g blanc 39g C-L-G-P 65/16-5.8/0-0.1/0.1-3.1/3.8","categorie":"Oeuf","portion_defaut":100,"unite":"g","calories_100g":135,"glucide":0.3,"lipide":9.6,"proteine":11.5},
+  {"id":46,"nom":"Orange (~ 180g)","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":47,"glucide":10,"lipide":20,"proteine":30},
+  {"id":47,"nom":"Pain Blanc-Bis frais (8x5x2 cm = 45g), moyenne","categorie":"Pain","portion_defaut":100,"unite":"g","calories_100g":260,"glucide":47,"lipide":1,"proteine":9},
+  {"id":48,"nom":"Pain Blanc-Bis toasté (8x5x2 cm = 45g), moyenne","categorie":"Pain","portion_defaut":100,"unite":"g","calories_100g":380,"glucide":47,"lipide":1,"proteine":9},
+  {"id":49,"nom":"Pates Crue/Cuite 350/150 kcal 100g","categorie":"Pâtes","portion_defaut":100,"unite":"g","calories_100g":130,"glucide":10,"lipide":20,"proteine":30},
+  {"id":50,"nom":"Petits Patés (130 gr)","categorie":"Charcuterie","portion_defaut":100,"unite":"g","calories_100g":353,"glucide":10,"lipide":20,"proteine":30},
+  {"id":51,"nom":"Petits Suisses (60gr)","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":141,"glucide":10,"lipide":20,"proteine":30},
+  {"id":52,"nom":"Poireau cuit","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":34,"glucide":4.2,"lipide":0.2,"proteine":2.1},
+  {"id":53,"nom":"Pomme","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":52,"glucide":10,"lipide":20,"proteine":30},
+  {"id":54,"nom":"Pomme de T. PDT sautées (vapeur g * 0.7)","categorie":"Féculent","portion_defaut":100,"unite":"g","calories_100g":75,"glucide":15.6,"lipide":0.1,"proteine":2},
+  {"id":55,"nom":"Poulet cuisse avec peau cru","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":163,"glucide":0,"lipide":10.2,"proteine":17.9},
+  {"id":56,"nom":"Poulet emincé au curry","categorie":"Assiette","portion_defaut":100,"unite":"g","calories_100g":123,"glucide":3.3,"lipide":5.1,"proteine":15.8},
+  {"id":57,"nom":"Poulet filets cru","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":107,"glucide":0,"lipide":1,"proteine":24.6},
+  {"id":58,"nom":"Raclette","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":340,"glucide":10,"lipide":20,"proteine":30},
+  {"id":59,"nom":"Rillette d'omble de BorexPoisson","categorie":"Poisson","portion_defaut":100,"unite":"g","calories_100g":155,"glucide":0.22,"lipide":9.78,"proteine":16.5},
+  {"id":60,"nom":"Riz cru","categorie":"Féculent","portion_defaut":100,"unite":"g","calories_100g":370,"glucide":10,"lipide":20,"proteine":30},
+  {"id":61,"nom":"Riz cuit (en sachet 125g cru/ 375g cuit)","categorie":"Féculent","portion_defaut":100,"unite":"g","calories_100g":130,"glucide":10,"lipide":20,"proteine":30},
+  {"id":62,"nom":"Salade Betteraves","categorie":"Salades","portion_defaut":100,"unite":"g","calories_100g":35,"glucide":6.2,"lipide":0.1,"proteine":1.1},
+  {"id":63,"nom":"Salade verte","categorie":"Salades","portion_defaut":100,"unite":"g","calories_100g":15,"glucide":10,"lipide":20,"proteine":30},
+  {"id":64,"nom":"San Pellegrino Sanbitter  100ml","categorie":"Boisson","portion_defaut":100,"unite":"g","calories_100g":63,"glucide":10,"lipide":20,"proteine":30},
+  {"id":65,"nom":"Sandwich Bagna Poulet au Curry","categorie":"Sandwich","portion_defaut":100,"unite":"g","calories_100g":240,"glucide":10,"lipide":20,"proteine":30},
+  {"id":66,"nom":"Sandwich pain mou jambon 19 cm 110g","categorie":"Sandwich","portion_defaut":110,"unite":"g","calories_100g":375,"glucide":45,"lipide":18,"proteine":18},
+  {"id":67,"nom":"Sanglier entrecôte","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":112,"glucide":10,"lipide":20,"proteine":30},
+  {"id":68,"nom":"Sardine","categorie":"Poisson","portion_defaut":100,"unite":"g","calories_100g":180,"glucide":10,"lipide":20,"proteine":30},
+  {"id":69,"nom":"Sauce à Salade (1cs/15ml = 77kcal)","categorie":"Salades","portion_defaut":100,"unite":"g","calories_100g":550,"glucide":10,"lipide":20,"proteine":30},
+  {"id":70,"nom":"Saucisse aux choux (350gr)","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":360,"glucide":10,"lipide":20,"proteine":30},
+  {"id":71,"nom":"Serac 120-180 kcal","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":150,"glucide":10,"lipide":20,"proteine":30},
+  {"id":72,"nom":"Skyr nature","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":57,"glucide":10,"lipide":20,"proteine":30},
+  {"id":73,"nom":"Snack salé type Le Rive","categorie":"Biscuit sucre-sel","portion_defaut":40,"unite":"g","calories_100g":580,"glucide":22,"lipide":50,"proteine":24},
+  {"id":74,"nom":"Soupe légumes et pdt bol bleu, sous l'imprimé = 3.5dl","categorie":"Assiette","portion_defaut":100,"unite":"g","calories_100g":48,"glucide":8,"lipide":0.26,"proteine":0.76},
+  {"id":75,"nom":"Spaetzli rôti au beurre","categorie":"Féculent","portion_defaut":100,"unite":"g","calories_100g":199,"glucide":26.2,"lipide":6.9,"proteine":7.3},
+  {"id":76,"nom":"Terrine de chasse","categorie":"Charcuterie","portion_defaut":100,"unite":"g","calories_100g":280,"glucide":10,"lipide":20,"proteine":30},
+  {"id":77,"nom":"Thon, boîte 155g","categorie":"Poisson","portion_defaut":155,"unite":"g","calories_100g":140,"glucide":0,"lipide":2.5,"proteine":27},
+  {"id":78,"nom":"Toffifee 1pce=8.3g","categorie":"Dessert","portion_defaut":8.3,"unite":"g","calories_100g":523,"glucide":59,"lipide":29.1,"proteine":5.9},
+  {"id":79,"nom":"Tomate 150g","categorie":"Légume","portion_defaut":150,"unite":"g","calories_100g":22,"glucide":10,"lipide":20,"proteine":30},
+  {"id":80,"nom":"Tomate 150g-22kcal/100g ; farcie 100g-270kcal/100g","categorie":"Assiette","portion_defaut":250,"unite":"g","calories_100g":305,"glucide":3,"lipide":9.7,"proteine":6.9},
+  {"id":81,"nom":"Viande hachée Bœuf-Porc","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":220,"glucide":10,"lipide":20,"proteine":30},
+  {"id":82,"nom":"Vin","categorie":"Alcool","portion_defaut":100,"unite":"g","calories_100g":90,"glucide":10,"lipide":20,"proteine":30},
+  {"id":83,"nom":"Yogourt nature","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":66,"glucide":10,"lipide":20,"proteine":30},
+  {"id":84,"nom":"Zwiebach Roland 6g","categorie":"Pain","portion_defaut":6,"unite":"g","calories_100g":420,"glucide":10,"lipide":20,"proteine":30}
 ];
 
 let aliments = [...BASE_ALIMENTS];
@@ -305,9 +390,9 @@ function formaterDate(dateStr){
   const date = new Date(dateStr + "T00:00:00");
   return date.toLocaleDateString("fr-FR", {
     weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric"
+    day:"2-digit",
+    month:"long",
+    year:"numeric"
   });
 }
 
@@ -460,7 +545,7 @@ function getCsvFileName(){
 function getJsonFileName(){
   const now = new Date();
   const pad = (n) => String(n).padStart(2, "0");
-  const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+  const datePart = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
   const timePart = `${pad(now.getHours())}${pad(now.getMinutes())}`;
   return `Repas_${datePart}-${timePart}.json`;
 }
