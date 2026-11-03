@@ -257,7 +257,7 @@ const BASE_ALIMENTS = [
 {"id":44,"nom":"Myrtilles","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":51,"glucide":10.6,"lipide":0.2,"proteine":0.9},
 {"id":45,"nom":"Nem Rouleaux Légume de RoseMarie 44g","categorie":"Assiette","portion_defaut":44,"unite":"g","calories_100g":210,"glucide":115,"lipide":43,"proteine":15},
 {"id":46,"nom":"Noix de Cajou","categorie":"Fruit sec","portion_defaut":20,"unite":"g","calories_100g":592,"glucide":27,"lipide":45,"proteine":18},
-{"id":47,"nom":"Oeuf 60g jaune 19g blanc 39g C-L-G-P 65/16-5.8/0-0.1/0.1-3.1/3.8","categorie":"Oeuf","portion_defaut":100,"unite":"g","calories_100g":135,"glucide":0.3,"lipide":9.6,"proteine":11.5},
+{"id":47,"nom":"Oeuf 60g jaune 19g blanc 39g C-L-G-P 65/16-5.8/0-0.1/0.1-3.1/3.8","categorie":"Oeuf","portion_defaut":100,"unite":"g","calories_100g":135,"glucide":0.3,"lipide":9.6,"proteine":11.1},
 {"id":48,"nom":"Orange (~ 180g) Mandar. Clémentine (~90g)","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":45,"glucide":8,"lipide":0.2,"proteine":0.8},
 {"id":49,"nom":"Pain Blanc-Bis frais (8x5x2 cm = 45g), moyenne","categorie":"Pain","portion_defaut":100,"unite":"g","calories_100g":260,"glucide":47,"lipide":1,"proteine":9},
 {"id":50,"nom":"Pain Blanc-Bis toasté (8x5x2 cm = 45g), moyenne","categorie":"Pain","portion_defaut":100,"unite":"g","calories_100g":380,"glucide":47,"lipide":1,"proteine":9},
@@ -306,6 +306,7 @@ let aliments = [...BASE_ALIMENTS];
 let historiqueRepas = {};
 let dateSelectionnee = new Date().toISOString().slice(0, 10);
 let alimentSelectionne = null;
+let dossierImportation = null;
 
 const STORAGE_KEY = "ali-ca-repas";
 const CUSTOM_FOODS_KEY = "ali-ca-custom-foods";
@@ -555,24 +556,43 @@ function getJsonFileName(){
   return `Repas_${datePart}-${timePart}.json`;
 }
 
+async function ouvrirDossierImportation() {
+  if (dossierImportation) return dossierImportation;
+
+  if (!window.showDirectoryPicker) {
+    throw new Error("showDirectoryPicker non supporté");
+  }
+
+  const dossierParent = await window.showDirectoryPicker({ mode: "readwrite" });
+  dossierImportation = await dossierParent.getDirectoryHandle("Importation", { create: true });
+  return dossierImportation;
+}
+
+async function enregistrerDansDossierImportation(nomFichier, contenu, typeMime) {
+  try {
+    const dossier = await ouvrirDossierImportation();
+    const fichierHandle = await dossier.getFileHandle(nomFichier, { create: true });
+    const flux = await fichierHandle.createWritable();
+    await flux.write(contenu);
+    await flux.close();
+    return true;
+  } catch (erreur) {
+    if (erreur && erreur.name === "AbortError") {
+      return false;
+    }
+    console.warn("Impossible d'écrire dans le dossier Importation.", erreur);
+    return false;
+  }
+}
+
 async function sauvegarderCSV(){
   const csvContent = getCsvContent();
   const nomFichier = getCsvFileName();
 
-  if (window.showDirectoryPicker) {
-    try {
-      const dossier = await window.showDirectoryPicker({ mode: "readwrite" });
-      const fichierHandle = await dossier.getFileHandle(nomFichier, { create: true });
-      const flux = await fichierHandle.createWritable();
-      await flux.write(csvContent);
-      await flux.close();
-      alert("Fichier CSV enregistré dans le dossier choisi.");
-      return;
-    } catch (erreur) {
-      if (erreur && erreur.name !== "AbortError") {
-        console.warn("Dossier non sélectionné, fallback sur téléchargement.", erreur);
-      }
-    }
+  const ecrit = await enregistrerDansDossierImportation(nomFichier, csvContent, "text/csv;charset=utf-8;");
+  if (ecrit) {
+    alert("Fichier CSV enregistré dans le dossier Importation.");
+    return;
   }
 
   if (window.showSaveFilePicker) {
@@ -761,20 +781,10 @@ async function exporterRepasJSON(){
   const jsonContent = JSON.stringify(donnees, null, 2);
   const nomFichier = getJsonFileName();
 
-  if (window.showDirectoryPicker) {
-    try {
-      const dossier = await window.showDirectoryPicker({ mode: "readwrite" });
-      const fichierHandle = await dossier.getFileHandle(nomFichier, { create: true });
-      const flux = await fichierHandle.createWritable();
-      await flux.write(jsonContent);
-      await flux.close();
-      alert("Fichier JSON enregistré dans le dossier choisi.");
-      return;
-    } catch (erreur) {
-      if (erreur && erreur.name !== "AbortError") {
-        console.warn("Dossier non sélectionné, fallback sur téléchargement.", erreur);
-      }
-    }
+  const ecrit = await enregistrerDansDossierImportation(nomFichier, jsonContent, "application/json");
+  if (ecrit) {
+    alert("Fichier JSON enregistré dans le dossier Importation.");
+    return;
   }
 
   if (window.showSaveFilePicker) {
