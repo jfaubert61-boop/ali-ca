@@ -404,8 +404,7 @@ function formaterDate(dateStr){
 
 function formaterDateHeure(date) {
   const pad = (nombre) => String(nombre).padStart(2, "0");
-  const annee = String(date.getFullYear()).slice(-2);
-  return `${annee}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}${pad(date.getMinutes())}`;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 function normaliserHistorique(data){
@@ -522,18 +521,19 @@ function escapeCSV(valeur){
 }
 
 function getCsvContent(){
-  const lignes = [["date", "aliment", "quantite_g", "calories_kcal", "glucides_g", "lipides_g", "proteines_g", "poids_kg"]];
+  const lignes = [["date", "date_heure", "aliment", "quantite_g", "calories_kcal", "glucides_g", "lipides_g", "proteines_g", "poids_kg"]];
   getHistoriqueTrie().forEach(([dateJour, data]) => {
     const repas = Array.isArray(data?.repas) ? data.repas : [];
     const poidsKg = data?.poidsKg == null ? "" : Number(data.poidsKg).toFixed(1);
     const [annee, mois, jour] = dateJour.split("-");
     const dateCSV = `${annee.slice(-2)}-${mois}-${jour}`;
     if (repas.length === 0 && poidsKg !== "") {
-      lignes.push([dateCSV, "", "", "", "", "", "", poidsKg]);
+      lignes.push([dateCSV, "", "", "", "", "", "", "", poidsKg]);
     }
     repas.forEach((item) => {
       lignes.push([
         dateCSV,
+        item.dateHeure || "",
         item.nom,
         Number(item.quantite) || 0,
         Number(item.calories) || 0,
