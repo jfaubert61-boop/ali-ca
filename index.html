@@ -1,10 +1,30 @@
-<!DOCTYPE html>
-<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cal_New_V4_5</title>
+<title>Cal_New_V4_61</title>
 <style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f2f7;margin:0;padding:12px;font-size:14px}
+.container{max-width:700px;margin:auto}
+h1{text-align:center;color:#007AFF;font-size:24px;margin:8px 0 16px}
+h2{margin:0 0 10px;font-size:18px}
+.card{background:white;padding:12px;margin-bottom:12px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,.08)}
+label{display:block;margin-top:8px;font-weight:600;font-size:13px}
+input{width:100%;box-sizing:border-box;padding:10px 11px;border:1px solid #ccc;border-radius:8px;font-size:14px}
+button{width:100%;padding:12px;margin-top:12px;border:none;border-radius:8px;font-size:14px;font-weight:bold;color:white;background:#007AFF}
+button:active{opacity:.8}
+#listeAliments{margin-top:10px;border-top:1px solid #eee;max-height:min(52vh,360px);overflow-y:auto;overflow-x:hidden;padding-right:6px;scroll-behavior:smooth}
+#listeAliments::-webkit-scrollbar{width:8px}
+#listeAliments::-webkit-scrollbar-track{background:#f1f1f1;border-radius:8px}
+#listeAliments::-webkit-scrollbar-thumb{background:#c7c7cc;border-radius:8px}
+.aliment{padding:10px 8px;border-bottom:1px solid #eee;cursor:pointer;font-size:13px;line-height:1.35;transition:background .15s ease,transform .15s ease}
+.aliment:hover{background:#f7f9ff}.aliment-selectionne{background:#d6e9ff;border-radius:6px}
+.selection{margin-top:10px;color:#007AFF;font-weight:bold;font-size:13px}
+.ligneRepas{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding:8px 0;font-size:13px}
+.btnSupprimer{width:auto;background:#ff3b30;margin:0;padding:6px 10px;font-size:12px}
+.total{text-align:center;font-size:22px;font-weight:bold;color:#34C759}
+.info{color:#666;font-size:12px;margin-top:8px}
+.historiqueJour{padding:6px 0;border-bottom:1px solid #eee;font-size:12px}.historiqueJour:last-child{border-bottom:none}
+@media(max-width:480px){#listeAliments{max-height:40vh}.aliment{font-size:12.5px;padding:9px 6px}}
 body{
     font-family:-apple-system,BlinkMacSystemFont,sans-serif;
     background:#f2f2f7;
@@ -140,54 +160,47 @@ button:active{ opacity:0.8; }
 </head>
 <body>
 <div class="container">
-  <h1>🍎 Cal_New_V4_5</h1>
+  <h1>🍎 Cal_New_V4_61</h1>
 
-  <div class="card">
-    <h2>Repas</h2>
+<div class="card">
+<h2>Repas</h2>
 
-    <label for="poidsKg">Poids (kg)</label>
-    <input type="number" id="poidsKg" min="0" max="999.9" step="0.1" inputmode="decimal" placeholder="###.#">
+<label for="poidsKg">Poids (kg)</label>
+<input type="number" id="poidsKg" min="0" max="999.9" step="0.1" inputmode="decimal" placeholder="###.#">
 
+    <div style="display:grid;gap:8px">
     <div style="display:grid; gap:8px;">
-      <button onclick="exporterRepasJSON()">📤 Exporter repas JSON</button>
-      <button onclick="sauvegarderCSV()">📄 Enregistrer CSV dans le dossier</button>
-    </div>
+<button onclick="exporterRepasJSON()">📤 Exporter repas JSON</button>
+<button onclick="sauvegarderCSV()">📄 Enregistrer CSV dans le dossier</button>
+</div>
+@@ -62,33 +172,41 @@ <h2>Repas</h2>
+<div class="card">
+<label>Recherche</label>
+<input type="text" id="recherche" placeholder="Exemple : pomme">
 
-    <input type="file" id="importRepas" accept=".json" onchange="importerRepasJSON(event)">
-    <div id="repas"></div>
-    <div id="historiqueJours" class="info"></div>
-  </div>
+<div id="selection" class="selection">Aucun aliment sélectionné</div>
+<div id="listeAliments"></div>
 
-  <div class="card">
-    <label>Aliment personnalisé</label>
-    <input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment">
-    <input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)">
-    <input type="number" id="kcalPerso" min="0" step="1" placeholder="kcal / 100g">
-    <input type="number" id="glucidePerso" min="0" step="0.1" value="10" placeholder="Glucides / 100g (g)">
-    <input type="number" id="lipidePerso" min="0" step="0.1" value="20" placeholder="Lipides / 100g (g)">
-    <input type="number" id="proteinePerso" min="0" step="0.1" value="30" placeholder="Protéines / 100g (g)">
-    <button onclick="ajouterAlimentPerso()">Ajouter à la liste</button>
-  </div>
+<label>Quantité (g)</label>
+<input type="number" id="quantite" value="100" min="1">
 
-  <div class="card">
-    <label>Recherche</label>
-    <input type="text" id="recherche" placeholder="Exemple : pomme">
+<button onclick="ajouterAuRepas()">Ajouter au repas</button>
+</div>
 
-    <div id="selection" class="selection">Aucun aliment sélectionné</div>
-    <div id="listeAliments"></div>
-
-    <label>Quantité (g)</label>
-    <input type="number" id="quantite" value="100" min="1">
-
-    <button onclick="ajouterAuRepas()">Ajouter au repas</button>
-  </div>
-
+  <div class="card"><div id="total" class="total">0 kcal</div></div>
   <div class="card">
     <div id="total" class="total">0 kcal</div>
   </div>
 </div>
 
 <script>
+function normaliserAliment(aliment){
+  if(!aliment||typeof aliment!=="object")return aliment;
+  const glucide=Number(aliment.glucide), lipide=Number(aliment.lipide), proteine=Number(aliment.proteine);
+  return {...aliment,
+    glucide:Number.isFinite(glucide)&&glucide>=0?glucide:10,
+    lipide:Number.isFinite(lipide)&&lipide>=0?lipide:20,
+    proteine:Number.isFinite(proteine)&&proteine>=0?proteine:30
 function normaliserAliment(aliment) {
   if (!aliment || typeof aliment !== "object") return aliment;
   const glucide = Number(aliment.glucide);
@@ -198,49 +211,99 @@ function normaliserAliment(aliment) {
     glucide: Number.isFinite(glucide) && glucide >= 0 ? glucide : 10,
     lipide: Number.isFinite(lipide) && lipide >= 0 ? lipide : 20,
     proteine: Number.isFinite(proteine) && proteine >= 0 ? proteine : 30
-  };
+};
 }
 
+function calculerMacros(aliment, quantite){
+  const q=Number(quantite)||0;
 function calculerMacros(aliment, quantite) {
   const q = Number(quantite) || 0;
-  return {
+return {
+    glucide:((Number(aliment.glucide)||0)*q)/100,
+    lipide:((Number(aliment.lipide)||0)*q)/100,
+    proteine:((Number(aliment.proteine)||0)*q)/100
     glucide: ((Number(aliment.glucide) || 0) * q) / 100,
     lipide: ((Number(aliment.lipide) || 0) * q) / 100,
     proteine: ((Number(aliment.proteine) || 0) * q) / 100
-  };
+};
 }
 
-const BASE_ALIMENTS = [
-  {"id":1,"nom":"Abricot sec","categorie":"Fruit sec","portion_defaut":100,"unite":"g","calories_100g":276,"glucide":55,"lipide":0,"proteine":4.8},
-{"id":2,"nom":"Accompagn. choux-poire-marron-sauce","categorie":"Assiette","portion_defaut":150,"unite":"g","calories_100g":200,"glucide":35,"lipide":1.3,"proteine":2.5},
-{"id":3,"nom":"After Eight (8.3g / pce)","categorie":"Dessert","portion_defaut":8,"unite":"g","calories_100g":426,"glucide":73,"lipide":13,"proteine":2.1},
-{"id":4,"nom":"Avoine50-yog60-pamplem05","categorie":"Céréales","portion_defaut":100,"unite":"g","calories_100g":381,"glucide":63,"lipide":7,"proteine":13},
-{"id":5,"nom":"Banane 90-100g","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":90,"glucide":19.7,"lipide":0.2,"proteine":1.1},
-{"id":6,"nom":"Bar Merlu filet","categorie":"Poisson","portion_defaut":100,"unite":"g","calories_100g":124,"glucide":0,"lipide":5.3,"proteine":19.1},
-{"id":7,"nom":"Beurre 1 cc=6g    1cs=19g","categorie":"Corps gras","portion_defaut":6,"unite":"g","calories_100g":745,"glucide":0.6,"lipide":82.5,"proteine":0.4},
+@@ -103,7 +221,7 @@ <h2>Repas</h2>
 {"id":8,"nom":"Biscuit Lotus Biscoff 7g 38 kcal)","categorie":"Biscuit sucre-sel","portion_defaut":100,"unite":"g","calories_100g":484,"glucide":72.6,"lipide":19,"proteine":4.9},
 {"id":9,"nom":"Biscuit Palmier 7g","categorie":"Biscuit sucre-sel","portion_defaut":100,"unite":"g","calories_100g":481,"glucide":69,"lipide":19,"proteine":7.5},
 {"id":10,"nom":"Boeuf cote - entrecote (600g de chair 900 avec os)","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":280,"glucide":0,"lipide":4.5,"proteine":24},
+{"id":11,"nom":"Cacahuete 1 gousse (3.66)g *0.5 =(1.83)g net","categorie":"Fruit sec","portion_defaut":36,"unite":"g","calories_100g":623,"glucide":14.8,"lipide":49.1,"proteine":26.1},
 {"id":11,"nom":"Cacahuete 1 gousse (3.66)g *0.5 =(1.83)g net","categorie":"Fruit sec","portion_defaut":100,"unite":"g","calories_100g":623,"glucide":14.8,"lipide":49.1,"proteine":26.1},
 {"id":12,"nom":"Camenbert Rustique","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":268,"glucide":1,"lipide":20,"proteine":21},
 {"id":13,"nom":"Canapé @Evelyne diamètre 5cm, 30g","categorie":"Sandwich","portion_defaut":100,"unite":"g","calories_100g":80,"glucide":4,"lipide":5,"proteine":6},
 {"id":14,"nom":"Carotte crue","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":42,"glucide":7.6,"lipide":0.4,"proteine":0.6},
-{"id":15,"nom":"Carotte cuite","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":42,"glucide":7.6,"lipide":0.1,"proteine":0.6},
-{"id":16,"nom":"Cervelas","categorie":"Charcuterie","portion_defaut":100,"unite":"g","calories_100g":249,"glucide":0.5,"lipide":21.5,"proteine":13.4},
-{"id":17,"nom":"Cheval Entrecote cru","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":112,"glucide":0,"lipide":2.9,"proteine":21.4},
-{"id":18,"nom":"Chevreuil","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":105,"glucide":0,"lipide":1.9,"proteine":22},
-{"id":19,"nom":"Chips","categorie":"Biscuit sucre-sel","portion_defaut":100,"unite":"g","calories_100g":538,"glucide":49.3,"lipide":34.8,"proteine":4.9},
-{"id":20,"nom":"Chocolat Lindt noisette 1 bare 30g","categorie":"Dessert","portion_defaut":100,"unite":"g","calories_100g":593,"glucide":41,"lipide":43,"proteine":8.7},
-{"id":21,"nom":"Chou-fleur vapeur","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":26,"glucide":2.1,"lipide":0.7,"proteine":1.8},
-{"id":22,"nom":"Confiture abricot 80% sucre, 1cs 20g","categorie":"Miel - Confiture","portion_defaut":20,"unite":"g","calories_100g":246,"glucide":58.7,"lipide":0.5,"proteine":0.5},
-{"id":23,"nom":"Croissant de Tête de Course","categorie":"Boulangerie","portion_defaut":70,"unite":"g","calories_100g":432,"glucide":43.5,"lipide":24.2,"proteine":8.7},
-{"id":24,"nom":"Delice (@Coeur des Saveurs 66g)","categorie":"Boulangerie","portion_defaut":100,"unite":"g","calories_100g":136,"glucide":15.4,"lipide":3.4,"proteine":10.7},
-{"id":25,"nom":"Figue 16g","categorie":"Fruit sec","portion_defaut":16,"unite":"g","calories_100g":276,"glucide":58,"lipide":1.2,"proteine":3.2},
-{"id":26,"nom":"Flocon avoine Knorr de Coop","categorie":"Céréales","portion_defaut":100,"unite":"g","calories_100g":381,"glucide":63,"lipide":7,"proteine":13},
-{"id":27,"nom":"Flute","categorie":"Biscuit sucre-sel","portion_defaut":100,"unite":"g","calories_100g":465,"glucide":56,"lipide":21,"proteine":13},
+@@ -123,590 +241,661 @@ <h2>Repas</h2>
 {"id":28,"nom":"Foie de boeuf","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":142,"glucide":5.3,"lipide":4.3,"proteine":20.5},
 {"id":29,"nom":"Fondue fromage/vin 100/40","categorie":"Produit laitier","portion_defaut":200,"unite":"g","calories_100g":430,"glucide":1,"lipide":32,"proteine":26.4},
 {"id":30,"nom":"Fruit rouge (Mûre Framboise myrtille raisinet)","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":42,"glucide":6.3,"lipide":0.5,"proteine":1.2},
+{"id":31,"nom":"Glace boule 50mm 60g","categorie":"Dessert","portion_defaut":60,"unite":"g","calories_100g":278,"glucide":24.2,"lipide":17.9,"proteine":4.1},
+{"id":32,"nom":"Gruyere","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":394,"glucide":0,"lipide":32,"proteine":26.4},
+{"id":33,"nom":"Haricot grain","categorie":"Legume","portion_defaut":100,"unite":"g","calories_100g":137,"glucide":19,"lipide":0.6,"proteine":9.8},
+{"id":34,"nom":"Haricots vert","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":33,"glucide":4.3,"lipide":0.2,"proteine":2},
+{"id":35,"nom":"Huile Olive 1cc=5g   1cs=15g","categorie":"Corps gras","portion_defaut":5,"unite":"g","calories_100g":900,"glucide":0,"lipide":100,"proteine":0},
+{"id":36,"nom":"Jambon blanc","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":104,"glucide":0.7,"lipide":2.3,"proteine":20.2},
+{"id":37,"nom":"Jus pamplemousse","categorie":"Jus de Fruit","portion_defaut":100,"unite":"g","calories_100g":41,"glucide":9.1,"lipide":0.5,"proteine":0.5},
+{"id":38,"nom":"Kirsch 20cl = 20gr","categorie":"Alcool","portion_defaut":100,"unite":"g","calories_100g":245,"glucide":0,"lipide":0,"proteine":0},
+{"id":39,"nom":"Lait","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":68,"glucide":4.6,"lipide":4.1,"proteine":3.2},
+{"id":40,"nom":"Mandarine","categorie":"Fruit","portion_defaut":90,"unite":"g","calories_100g":53,"glucide":12,"lipide":0.3,"proteine":0},
+{"id":41,"nom":"Miel (1cc rase = 7g ; 1cs =21g)","categorie":"Miel - Confiture","portion_defaut":7,"unite":"g","calories_100g":306,"glucide":76,"lipide":0,"proteine":0.4},
+{"id":42,"nom":"Mortadelle Regina (Coop)","categorie":"Charcuterie","portion_defaut":100,"unite":"g","calories_100g":298,"glucide":0,"lipide":26,"proteine":16},
+{"id":43,"nom":"Myrtilles","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":51,"glucide":10.6,"lipide":0.2,"proteine":0.9},
+{"id":44,"nom":"Nem Rouleaux Légume de RoseMarie 44g","categorie":"Assiette","portion_defaut":44,"unite":"g","calories_100g":210,"glucide":115,"lipide":43,"proteine":15},
+{"id":45,"nom":"Noix de Cajou","categorie":"Fruit sec","portion_defaut":20,"unite":"g","calories_100g":592,"glucide":27,"lipide":45,"proteine":18},
+{"id":46,"nom":"Oeuf 60g jaune 19g blanc 39g C-L-G-P 65/16-5.8/0-0.1/0.1-3.1/3.8","categorie":"Oeuf","portion_defaut":100,"unite":"g","calories_100g":135,"glucide":0.3,"lipide":9.6,"proteine":11.5},
+{"id":47,"nom":"Orange (~ 180g) Mandar. Clémentine (~90g)","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":45,"glucide":8,"lipide":0.2,"proteine":0.8},
+{"id":48,"nom":"Pain Blanc-Bis frais (8x5x2 cm = 45g), moyenne","categorie":"Pain","portion_defaut":100,"unite":"g","calories_100g":260,"glucide":47,"lipide":1,"proteine":9},
+{"id":49,"nom":"Pain Blanc-Bis toasté (8x5x2 cm = 45g), moyenne","categorie":"Pain","portion_defaut":100,"unite":"g","calories_100g":380,"glucide":47,"lipide":1,"proteine":9},
+{"id":50,"nom":"Pates alimentaire Crue","categorie":"Pâtes","portion_defaut":100,"unite":"g","calories_100g":359,"glucide":73,"lipide":4.5,"proteine":13},
+{"id":51,"nom":"Pates alimentaire cuite","categorie":"Pâtes","portion_defaut":100,"unite":"g","calories_100g":150,"glucide":73,"lipide":4.5,"proteine":13},
+{"id":52,"nom":"Petits Patés (130 gr)","categorie":"Charcuterie","portion_defaut":100,"unite":"g","calories_100g":330,"glucide":24,"lipide":20,"proteine":11.7},
+{"id":53,"nom":"Petits Suisses (60gr)","categorie":"Produit laitier","portion_defaut":60,"unite":"g","calories_100g":136,"glucide":3.6,"lipide":9.5,"proteine":9.1},
+{"id":54,"nom":"Pizza Thon 33 cm ~700g","categorie":"Pizza","portion_defaut":100,"unite":"g","calories_100g":230,"glucide":25.7,"lipide":8.6,"proteine":10.7},
+{"id":55,"nom":"Poireau cuit","categorie":"Légume","portion_defaut":100,"unite":"g","calories_100g":34,"glucide":4.2,"lipide":0.2,"proteine":2.1},
+{"id":56,"nom":"Pois chiche","categorie":"Legume","portion_defaut":100,"unite":"g","calories_100g":167,"glucide":23,"lipide":2.9,"proteine":9},
+{"id":57,"nom":"Pomme (~180g)","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":52,"glucide":13,"lipide":0.2,"proteine":0.3},
+{"id":58,"nom":"Pomme de T. PDT sautées (vapeur g * 0.7)","categorie":"Féculent","portion_defaut":100,"unite":"g","calories_100g":75,"glucide":15.6,"lipide":0.1,"proteine":2},
+{"id":59,"nom":"Poulet cuisse avec peau cru","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":163,"glucide":0,"lipide":10.2,"proteine":17.9},
+{"id":60,"nom":"Poulet emincé au curry","categorie":"Assiette","portion_defaut":100,"unite":"g","calories_100g":123,"glucide":3.3,"lipide":5.1,"proteine":15.8},
+{"id":61,"nom":"Poulet filets cru","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":107,"glucide":0,"lipide":1,"proteine":24.6},
+{"id":62,"nom":"Raclette","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":343,"glucide":0,"lipide":27,"proteine":25},
+{"id":63,"nom":"Rillette d'omble de BorexPoisson","categorie":"Poisson","portion_defaut":100,"unite":"g","calories_100g":155,"glucide":0.22,"lipide":9.78,"proteine":16.5},
+{"id":64,"nom":"Riz cru ; cuit = g x 0.3","categorie":"Féculent","portion_defaut":100,"unite":"g","calories_100g":352,"glucide":78,"lipide":0.9,"proteine":7.4},
+{"id":65,"nom":"Salade Betteraves","categorie":"Salades","portion_defaut":100,"unite":"g","calories_100g":35,"glucide":6.2,"lipide":0.1,"proteine":1.1},
+{"id":66,"nom":"Salade verte","categorie":"Salades","portion_defaut":100,"unite":"g","calories_100g":16,"glucide":1.8,"lipide":0.2,"proteine":1},
+{"id":67,"nom":"San Pellegrino Sanbitter  100ml","categorie":"Boisson","portion_defaut":100,"unite":"g","calories_100g":63,"glucide":15.1,"lipide":0,"proteine":0},
+{"id":68,"nom":"Sandwich Bagna Poulet au Curry ~140g","categorie":"Sandwich","portion_defaut":100,"unite":"g","calories_100g":450,"glucide":40,"lipide":23,"proteine":21},
+{"id":69,"nom":"Sandwich pain mou jambon 19 cm 110g","categorie":"Sandwich","portion_defaut":110,"unite":"g","calories_100g":375,"glucide":45,"lipide":18,"proteine":18},
+{"id":70,"nom":"Sanglier entrecôte","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":108,"glucide":0,"lipide":3.3,"proteine":19.5},
+{"id":71,"nom":"Sardine nature ; à l'huile g x 1.25","categorie":"Poisson","portion_defaut":100,"unite":"g","calories_100g":168,"glucide":0.1,"lipide":8.9,"proteine":22},
+{"id":72,"nom":"Sauce à Salade Sonia (1cs/15ml = 77kcal)","categorie":"Salades","portion_defaut":100,"unite":"ml","calories_100g":294,"glucide":0.2,"lipide":31.8,"proteine":0.2},
+{"id":73,"nom":"Sauce à salade vinaigrette Coop","categorie":"Salades","portion_defaut":100,"unite":"g","calories_100g":344,"glucide":7.6,"lipide":34.2,"proteine":1.6},
+{"id":74,"nom":"Saucisse aux choux (350gr)","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":363,"glucide":1.6,"lipide":32.4,"proteine":15.9},
+{"id":75,"nom":"Serac 120-180 kcal","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":122,"glucide":3.3,"lipide":7.2,"proteine":10.9},
+{"id":76,"nom":"Skyr nature","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":58,"glucide":3.5,"lipide":0,"proteine":11},
+{"id":77,"nom":"Snack salé type Le Rive","categorie":"Biscuit sucre-sel","portion_defaut":40,"unite":"g","calories_100g":580,"glucide":22,"lipide":50,"proteine":24},
+{"id":78,"nom":"Soupe légumes et pdt bol bleu, sous l'imprimé = 3.5dl","categorie":"Assiette","portion_defaut":100,"unite":"g","calories_100g":48,"glucide":8,"lipide":0.26,"proteine":0.76},
+{"id":79,"nom":"Spaetzli rôti au beurre","categorie":"Féculent","portion_defaut":100,"unite":"g","calories_100g":199,"glucide":26.2,"lipide":6.9,"proteine":7.3},
+{"id":80,"nom":"Terrine de chasse","categorie":"Charcuterie","portion_defaut":100,"unite":"g","calories_100g":243,"glucide":1.6,"lipide":18.7,"proteine":16.5},
+{"id":81,"nom":"Thon, boîte 155g","categorie":"Poisson","portion_defaut":155,"unite":"g","calories_100g":140,"glucide":0,"lipide":2.5,"proteine":27},
+{"id":82,"nom":"Toffifee 1pce=8.3g","categorie":"Dessert","portion_defaut":8.3,"unite":"g","calories_100g":523,"glucide":59,"lipide":29.1,"proteine":5.9},
+{"id":83,"nom":"Tomate 150g","categorie":"Légume","portion_defaut":150,"unite":"g","calories_100g":22,"glucide":3.3,"lipide":0.3,"proteine":0.9},
+{"id":84,"nom":"Tomate 150g-22kcal/100g ; farcie 100g-270kcal/100g","categorie":"Assiette","portion_defaut":250,"unite":"g","calories_100g":305,"glucide":3,"lipide":9.7,"proteine":6.9},
+{"id":85,"nom":"Viande steak hachée Bœuf","categorie":"Viande","portion_defaut":100,"unite":"g","calories_100g":240,"glucide":6.4,"lipide":20,"proteine":18.9},
+{"id":86,"nom":"Vin","categorie":"Alcool","portion_defaut":100,"unite":"g","calories_100g":71,"glucide":2,"lipide":0,"proteine":0.1},
+{"id":87,"nom":"Yogourt nature lait entier","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":66,"glucide":4.5,"lipide":3.6,"proteine":3.9},
+{"id":88,"nom":"Zwiebach Roland 6g","categorie":"Pain","portion_defaut":6,"unite":"g","calories_100g":420,"glucide":74,"lipide":8.3,"proteine":12},
+{"id":89,"nom":"Fenouil","categorie":"Legume","portion_defaut":100,"unite":"g","calories_100g":22,"glucide":2.5,"lipide":0.4,"proteine":1},
+{"id":90,"nom":"Yogourt nature 1.5% Coop","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":48,"glucide":3.9,"lipide":1.5,"proteine":4.6},
+{"id":91,"nom":"Sirop Citron Morand 1cs = 15 ml = 20 g","categorie":"Boisson","portion_defaut":20,"unite":"g","calories_100g":60.6,"glucide":15.2,"lipide":0,"proteine":0},
+{"id":92,"nom":"Viande fumée Mostmöckli Migros","categorie":"viande","portion_defaut":100,"unite":"g","calories_100g":175,"glucide":0.5,"lipide":2.7,"proteine":37},
+{"id":93,"nom":"Viande séchée Mostmöckli Migros","categorie":"viande","portion_defaut":100,"unite":"g","calories_100g":188,"glucide":1,"lipide":3.5,"proteine":38}
 {"id":31,"nom":"Fruits rouge","categorie":"Fruit","portion_defaut":100,"unite":"g","calories_100g":42,"glucide":6.3,"lipide":0.5,"proteine":1.2},
 {"id":32,"nom":"Glace boule 50mm 60g","categorie":"Dessert","portion_defaut":60,"unite":"g","calories_100g":278,"glucide":24.2,"lipide":17.9,"proteine":4.1},
 {"id":33,"nom":"Gruyere","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":394,"glucide":0,"lipide":32,"proteine":26.4},
@@ -302,6 +365,30 @@ const BASE_ALIMENTS = [
 {"id":89,"nom":"Zwiebach Roland 6g","categorie":"Pain","portion_defaut":6,"unite":"g","calories_100g":420,"glucide":74,"lipide":8.3,"proteine":12}
 ];
 
+let aliments=[...BASE_ALIMENTS];
+let historiqueRepas={};
+let dateSelectionnee=new Date().toISOString().slice(0,10);
+let alimentSelectionne=null;
+let dossierImportation=null;
+
+const STORAGE_KEY="ali-ca-repas";
+const CUSTOM_FOODS_KEY="ali-ca-custom-foods";
+const listeAliments=document.getElementById("listeAliments");
+const poidsInput=document.getElementById("poidsKg");
+
+function trierAlimentsParNom(a,b){
+  return String(a.nom||"").localeCompare(String(b.nom||""),"fr",{sensitivity:"base"});
+}
+
+function chargerAlimentsPerso(){
+  try{
+    if(typeof localStorage==="undefined")return [];
+    const raw=localStorage.getItem(CUSTOM_FOODS_KEY);
+    if(!raw)return [];
+    const data=JSON.parse(raw);
+    return Array.isArray(data)?data.map(normaliserAliment):[];
+  }catch(err){
+    console.warn("Impossible de charger les aliments personnalisés",err);
 let aliments = [...BASE_ALIMENTS];
 let historiqueRepas = {};
 let dateSelectionnee = new Date().toISOString().slice(0, 10);
@@ -326,10 +413,17 @@ function chargerAlimentsPerso() {
     return Array.isArray(data) ? data.map(normaliserAliment) : [];
   } catch (err) {
     console.warn("Impossible de charger les aliments personnalisés", err);
-    return [];
-  }
+return [];
+}
 }
 
+function sauvegarderAlimentsPerso(){
+  try{
+    if(typeof localStorage==="undefined")return;
+    const personnalises=aliments.filter(a=>a.categorie==="Personnalisé"||a.categorie==="Aliment personnalisé").map(normaliserAliment);
+    localStorage.setItem(CUSTOM_FOODS_KEY,JSON.stringify(personnalises));
+  }catch(err){
+    console.warn("Impossible de sauvegarder les aliments personnalisés",err);
 function sauvegarderAlimentsPerso() {
   try {
     if (typeof localStorage === "undefined") return;
@@ -339,9 +433,29 @@ function sauvegarderAlimentsPerso() {
     localStorage.setItem(CUSTOM_FOODS_KEY, JSON.stringify(personnalises));
   } catch (err) {
     console.warn("Impossible de sauvegarder les aliments personnalisés", err);
-  }
+}
 }
 
+function ajouterAlimentPerso(){
+  const nomInput=document.getElementById("nomAlimentPerso");
+  const categorieInput=document.getElementById("categorieAlimentPerso");
+  const kcalInput=document.getElementById("kcalPerso");
+  const glucideInput=document.getElementById("glucidePerso");
+  const lipideInput=document.getElementById("lipidePerso");
+  const proteineInput=document.getElementById("proteinePerso");
+
+  const nom=(nomInput.value||"").trim();
+  const categorie=(categorieInput.value||"Personnalisé").trim()||"Personnalisé";
+  const kcal=Number(kcalInput.value);
+  const glucide=Number(glucideInput.value);
+  const lipide=Number(lipideInput.value);
+  const proteine=Number(proteineInput.value);
+
+  if(!nom){alert("Saisis le nom de l'aliment.");return}
+  if(!Number.isFinite(kcal)||kcal<0){alert("Saisis une valeur de kcal valide (> 0).\n");return}
+
+  const nouvelAliment={
+    id:Date.now(),
 function ajouterAlimentPerso() {
   const nomInput = document.getElementById("nomAlimentPerso");
   const categorieInput = document.getElementById("categorieAlimentPerso");
@@ -362,20 +476,37 @@ function ajouterAlimentPerso() {
 
   const nouvelAliment = {
     id: Date.now(),
-    nom,
-    categorie,
+nom,
+categorie,
+    portion_defaut:100,
+    unite:"g",
+    calories_100g:kcal,
+    glucide:Number.isFinite(glucide)&&glucide>=0?glucide:10,
+    lipide:Number.isFinite(lipide)&&lipide>=0?lipide:20,
+    proteine:Number.isFinite(proteine)&&proteine>=0?proteine:30
     portion_defaut: 100,
     unite: "g",
     calories_100g: kcal,
     glucide: Number.isFinite(glucide) && glucide >= 0 ? glucide : 10,
     lipide: Number.isFinite(lipide) && lipide >= 0 ? lipide : 20,
     proteine: Number.isFinite(proteine) && proteine >= 0 ? proteine : 30
-  };
+};
 
-  aliments.push(nouvelAliment);
-  aliments.sort(trierAlimentsParNom);
-  sauvegarderAlimentsPerso();
+aliments.push(nouvelAliment);
+aliments.sort(trierAlimentsParNom);
+sauvegarderAlimentsPerso();
 
+  alimentSelectionne=nouvelAliment;
+  document.getElementById("selection").innerHTML="Sélection : "+nom;
+  document.getElementById("quantite").value=100;
+  nomInput.value="";
+  categorieInput.value="";
+  kcalInput.value="";
+  glucideInput.value="10";
+  lipideInput.value="20";
+  proteineInput.value="30";
+
+  document.getElementById("recherche").value="";
   alimentSelectionne = nouvelAliment;
   document.getElementById("selection").innerHTML = "Sélection : " + nom;
   document.getElementById("quantite").value = 100;
@@ -387,12 +518,14 @@ function ajouterAlimentPerso() {
   proteineInput.value = "30";
 
   document.getElementById("recherche").value = "";
-  afficherAliments("");
+afficherAliments("");
 }
 
+aliments=aliments.concat(chargerAlimentsPerso()).map(normaliserAliment).sort(trierAlimentsParNom);
 aliments = aliments.concat(chargerAlimentsPerso()).map(normaliserAliment).sort(trierAlimentsParNom);
 
 function formaterDate(dateStr){
+  return new Date(dateStr+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
   const date = new Date(dateStr + "T00:00:00");
   return date.toLocaleDateString("fr-FR", {
     weekday: "long",
@@ -402,6 +535,9 @@ function formaterDate(dateStr){
   });
 }
 
+function normaliserPoidsKg(valeur){
+  const poids=Number(valeur);
+  return Number.isFinite(poids)&&poids>=0&&poids<=999.9 ? poids : null;
 function formaterDateHeure(date) {
   const pad = (nombre) => String(nombre).padStart(2, "0");
   const annee = String(date.getFullYear()).slice(-2);
@@ -409,6 +545,8 @@ function formaterDateHeure(date) {
 }
 
 function normaliserHistorique(data){
+  if(Array.isArray(data)){
+    return {[dateSelectionnee]:{repas:data,total:data.reduce((s,item)=>s+(Number(item.calories)||0),0)}};
   if (Array.isArray(data)) {
     return {
       [dateSelectionnee]: {
@@ -416,39 +554,59 @@ function normaliserHistorique(data){
         total: data.reduce((s, item) => s + (Number(item.calories) || 0), 0)
       }
     };
-  }
+}
+  if(data&&typeof data==="object"){
+    const jours={};
+    Object.entries(data).forEach(([date,valeur])=>{
+      const repas=Array.isArray(valeur?.repas)?valeur.repas:(Array.isArray(valeur)?valeur:[]);
+      const poidsKg=normaliserPoidsKg(valeur?.poidsKg);
+      jours[date]={
   if (data && typeof data === "object") {
     const jours = {};
     Object.entries(data).forEach(([date, valeur]) => {
       const repas = Array.isArray(valeur?.repas) ? valeur.repas : (Array.isArray(valeur) ? valeur : []);
       const poidsKg = Number(valeur?.poidsKg);
       jours[date] = {
-        repas,
+repas,
+        total:repas.reduce((s,item)=>s+(Number(item.calories)||0),0),
+        poidsKg
         total: repas.reduce((s, item) => s + (Number(item.calories) || 0), 0),
         poidsKg: valeur?.poidsKg !== null && valeur?.poidsKg !== "" && Number.isFinite(poidsKg) && poidsKg >= 0 && poidsKg <= 999.9 ? poidsKg : null
-      };
-    });
-    return jours;
-  }
-  return {};
+};
+});
+return jours;
+}
+return {};
 }
 
+function readCookieValue(key){
+  const match=document.cookie.match(new RegExp("(?:^|; )"+key+"=([^;]*)"));
+  return match?decodeURIComponent(match[1]):null;
 function readCookieValue(key) {
   const match = document.cookie.match(new RegExp("(?:^|; )" + key + "=([^;]*)"));
   return match ? decodeURIComponent(match[1]) : null;
 }
 
+function writeCookieValue(key,value){
+  try{
+    document.cookie=`${key}=${encodeURIComponent(value)}; path=/; max-age=${60*60*24*365}; SameSite=Lax`;
 function writeCookieValue(key, value) {
   try {
     document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-    return true;
+return true;
+  }catch(err){
+    console.warn("Cookie de secours indisponible",err);
   } catch (err) {
     console.warn("Cookie de secours indisponible", err);
-    return false;
-  }
+return false;
+}
 }
 
 function sauvegarderRepas(){
+  const payload=JSON.stringify(historiqueRepas);
+  try{
+    if(typeof localStorage!=="undefined"){localStorage.setItem(STORAGE_KEY,payload);return true}
+  }catch(err){console.warn("localStorage indisponible, fallback sur sessionStorage/cookie",err)}
   const payload = JSON.stringify(historiqueRepas);
   try {
     if (typeof localStorage !== "undefined") {
@@ -457,6 +615,9 @@ function sauvegarderRepas(){
     }
   } catch (err) { console.warn("localStorage indisponible, fallback sur sessionStorage/cookie", err); }
 
+  try{
+    if(typeof sessionStorage!=="undefined"){sessionStorage.setItem(STORAGE_KEY,payload);return true}
+  }catch(err){console.warn("sessionStorage indisponible, fallback sur cookie",err)}
   try {
     if (typeof sessionStorage !== "undefined") {
       sessionStorage.setItem(STORAGE_KEY, payload);
@@ -464,16 +625,32 @@ function sauvegarderRepas(){
     }
   } catch (err) { console.warn("sessionStorage indisponible, fallback sur cookie", err); }
 
+  try{
+    writeCookieValue(STORAGE_KEY,payload);
   try {
     writeCookieValue(STORAGE_KEY, payload);
-    return true;
+return true;
+  }catch(err){console.warn("Sauvegarde impossible dans les stockages standards",err)}
   } catch (err) { console.warn("Sauvegarde impossible dans les stockages standards", err); }
 
+  window.__aliCaFallbackStorage=payload;
   window.__aliCaFallbackStorage = payload;
-  return true;
+return true;
 }
 
 function chargerRepas(){
+  const sources=[];
+  if(typeof localStorage!=="undefined")sources.push(()=>localStorage.getItem(STORAGE_KEY));
+  if(typeof sessionStorage!=="undefined")sources.push(()=>sessionStorage.getItem(STORAGE_KEY));
+  sources.push(()=>readCookieValue(STORAGE_KEY));
+  sources.push(()=>window.__aliCaFallbackStorage||null);
+
+  for(const lire of sources){
+    try{
+      const raw=lire();
+      if(!raw)continue;
+      historiqueRepas=normaliserHistorique(JSON.parse(raw));
+      if(!historiqueRepas[dateSelectionnee])historiqueRepas[dateSelectionnee]={repas:[],total:0,poidsKg:null};
   const sources = [];
   if (typeof localStorage !== "undefined") sources.push(() => localStorage.getItem(STORAGE_KEY));
   if (typeof sessionStorage !== "undefined") sources.push(() => sessionStorage.getItem(STORAGE_KEY));
@@ -487,41 +664,58 @@ function chargerRepas(){
       const donnees = JSON.parse(raw);
       historiqueRepas = normaliserHistorique(donnees);
       if (!historiqueRepas[dateSelectionnee]) historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
-      return;
+return;
+    }catch(err){console.warn("Lecture de sauvegarde impossible, tentative suivante",err)}
     } catch (err) {
       console.warn("Lecture de sauvegarde impossible, tentative suivante", err);
     }
-  }
+}
 
+  historiqueRepas={};
+  historiqueRepas[dateSelectionnee]={repas:[],total:0,poidsKg:null};
   historiqueRepas = {};
   historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
 }
 
 function getRepasDuJour(){
+  const jour=historiqueRepas[dateSelectionnee]||{repas:[]};
+  return Array.isArray(jour.repas)?jour.repas:[];
   const jour = historiqueRepas[dateSelectionnee] || { repas: [] };
   return Array.isArray(jour.repas) ? jour.repas : [];
 }
 
 function setRepasDuJour(nouvelleListe){
+  const poidsKg=historiqueRepas[dateSelectionnee]?.poidsKg??null;
+  historiqueRepas[dateSelectionnee]={
+    repas:nouvelleListe,
+    total:nouvelleListe.reduce((s,item)=>s+(Number(item.calories)||0),0),
   const poidsKg = historiqueRepas[dateSelectionnee]?.poidsKg ?? null;
   historiqueRepas[dateSelectionnee] = {
     repas: nouvelleListe,
     total: nouvelleListe.reduce((s, item) => s + (Number(item.calories) || 0), 0),
-    poidsKg
-  };
-  sauvegarderRepas();
+poidsKg
+};
+sauvegarderRepas();
 }
 
 function getHistoriqueTrie(){
+  return Object.entries(historiqueRepas).sort(([a],[b])=>b.localeCompare(a));
   return Object.entries(historiqueRepas).sort(([a], [b]) => b.localeCompare(a));
 }
 
 function escapeCSV(valeur){
+  return `"${String(valeur ?? "").replace(/"/g,"\"\"")}"`;
   const chaine = String(valeur ?? "");
   return `"${chaine.replace(/"/g, '""')}"`;
 }
 
 function getCsvContent(){
+  const lignes=[["date","aliment","quantite_g","calories_kcal","glucides_g","lipides_g","proteines_g","poids_kg"]];
+  getHistoriqueTrie().forEach(([dateJour,data])=>{
+    const repas=Array.isArray(data?.repas)?data.repas:[];
+    const poidsKg=data?.poidsKg==null?"":Number(data.poidsKg).toFixed(1);
+    if(repas.length===0&&poidsKg!=="")lignes.push([dateJour,"","","","","","",poidsKg]);
+    repas.forEach(item=>{
   const lignes = [["date", "aliment", "quantite_g", "calories_kcal", "glucides_g", "lipides_g", "proteines_g", "poids_kg"]];
   getHistoriqueTrie().forEach(([dateJour, data]) => {
     const repas = Array.isArray(data?.repas) ? data.repas : [];
@@ -532,23 +726,33 @@ function getCsvContent(){
       lignes.push([dateCSV, "", "", "", "", "", "", poidsKg]);
     }
     repas.forEach((item) => {
-      lignes.push([
+lignes.push([
+        dateJour,
         dateCSV,
-        item.nom,
+item.nom,
+        Number(item.quantite)||0,
+        Number(item.calories)||0,
+        Number(item.glucide)||0,
+        Number(item.lipide)||0,
+        Number(item.proteine)||0,
         Number(item.quantite) || 0,
         Number(item.calories) || 0,
         Number(item.glucide) || 0,
         Number(item.lipide) || 0,
         Number(item.proteine) || 0,
-        poidsKg
-      ]);
-    });
-  });
+poidsKg
+]);
+});
+});
+  return lignes.map(ligne=>ligne.map(escapeCSV).join(",")).join("\n");
 
   return lignes.map(ligne => ligne.map(escapeCSV).join(",")).join("\n");
 }
 
 function getCsvFileName(){
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,"0");
+  return `historique_repas_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.csv`;
   const now = new Date();
   const pad = (n) => String(n).padStart(2, "0");
   const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
@@ -557,6 +761,9 @@ function getCsvFileName(){
 }
 
 function getJsonFileName(){
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,"0");
+  return `Repas_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.json`;
   const now = new Date();
   const pad = (n) => String(n).padStart(2, "0");
   const datePart = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
@@ -564,6 +771,11 @@ function getJsonFileName(){
   return `Repas_${datePart}-${timePart}.json`;
 }
 
+async function ouvrirDossierImportation(){
+  if(dossierImportation)return dossierImportation;
+  if(!window.showDirectoryPicker)throw new Error("showDirectoryPicker non supporté");
+  const dossierParent=await window.showDirectoryPicker({mode:"readwrite"});
+  dossierImportation=await dossierParent.getDirectoryHandle("Importation",{create:true});
 async function ouvrirDossierImportation() {
   if (dossierImportation) return dossierImportation;
 
@@ -573,27 +785,45 @@ async function ouvrirDossierImportation() {
 
   const dossierParent = await window.showDirectoryPicker({ mode: "readwrite" });
   dossierImportation = await dossierParent.getDirectoryHandle("Importation", { create: true });
-  return dossierImportation;
+return dossierImportation;
 }
 
+async function enregistrerDansDossierImportation(nomFichier,contenu,typeMime){
+  try{
+    const dossier=await ouvrirDossierImportation();
+    const fichierHandle=await dossier.getFileHandle(nomFichier,{create:true});
+    const flux=await fichierHandle.createWritable();
 async function enregistrerDansDossierImportation(nomFichier, contenu, typeMime) {
   try {
     const dossier = await ouvrirDossierImportation();
     const fichierHandle = await dossier.getFileHandle(nomFichier, { create: true });
     const flux = await fichierHandle.createWritable();
-    await flux.write(contenu);
-    await flux.close();
-    return true;
+await flux.write(contenu);
+await flux.close();
+return true;
+  }catch(erreur){
+    if(erreur&&erreur.name==="AbortError")return false;
+    console.warn("Impossible d'écrire dans le dossier Importation.",erreur);
   } catch (erreur) {
     if (erreur && erreur.name === "AbortError") {
       return false;
     }
     console.warn("Impossible d'écrire dans le dossier Importation.", erreur);
-    return false;
-  }
+return false;
+}
 }
 
 async function sauvegarderCSV(){
+  const csvContent=getCsvContent();
+  const nomFichier=getCsvFileName();
+  const ecrit=await enregistrerDansDossierImportation(nomFichier,csvContent,"text/csv;charset=utf-8;");
+  if(ecrit){alert("Fichier CSV enregistré dans le dossier Importation.");return}
+
+  if(window.showSaveFilePicker){
+    try{
+      const fichierHandle=await window.showSaveFilePicker({
+        suggestedName:nomFichier,
+        types:[{description:"CSV",accept:{"text/csv":[".csv"]}}]
   const csvContent = getCsvContent();
   const nomFichier = getCsvFileName();
 
@@ -608,81 +838,123 @@ async function sauvegarderCSV(){
       const fichierHandle = await window.showSaveFilePicker({
         suggestedName: nomFichier,
         types: [{ description: "CSV", accept: { "text/csv": [".csv"] } }]
-      });
+});
+      const flux=await fichierHandle.createWritable();
       const flux = await fichierHandle.createWritable();
-      await flux.write(csvContent);
-      await flux.close();
-      alert("Fichier CSV enregistré.");
-      return;
+await flux.write(csvContent);
+await flux.close();
+alert("Fichier CSV enregistré.");
+return;
+    }catch(erreur){
+      if(erreur&&erreur.name!=="AbortError")console.warn("Enregistrement fichier bloqué, fallback sur téléchargement.",erreur);
     } catch (erreur) {
       if (erreur && erreur.name !== "AbortError") {
         console.warn("Enregistrement fichier bloqué, fallback sur téléchargement.", erreur);
       }
-    }
-  }
+}
+}
 
+  const blob=new Blob([csvContent],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const lien=document.createElement("a");
+  lien.href=url; lien.download=nomFichier; lien.click();
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const lien = document.createElement("a");
   lien.href = url;
   lien.download = nomFichier;
   lien.click();
-  URL.revokeObjectURL(url);
-  alert("Fichier CSV téléchargé dans votre navigateur.");
+URL.revokeObjectURL(url);
+alert("Fichier CSV téléchargé dans votre navigateur.");
 }
 
+function afficherAliments(filtre=""){
+  listeAliments.innerHTML="";
+  const resultat=[...aliments]
+    .filter(aliment=>(aliment.nom||"").toLowerCase().includes(filtre.toLowerCase()))
 function afficherAliments(filtre = ""){
   listeAliments.innerHTML = "";
   const resultat = [...aliments]
     .filter(aliment => (aliment.nom || "").toLowerCase().includes(filtre.toLowerCase()))
-    .sort(trierAlimentsParNom);
+.sort(trierAlimentsParNom);
 
+  resultat.forEach(aliment=>{
+    const div=document.createElement("div");
+    div.className="aliment";
+    const macros=` • G ${Number(aliment.glucide||0).toFixed(0)} • L ${Number(aliment.lipide||0).toFixed(0)} • P ${Number(aliment.proteine||0).toFixed(0)}`;
+    div.innerHTML="<strong>"+aliment.nom+"</strong><br aria-hidden=\"true\">"+aliment.categorie+" • "+aliment.calories_100g+" kcal /100g"+macros;
   resultat.forEach(aliment => {
     const div = document.createElement("div");
     div.className = "aliment";
     const macros = ` • G ${Number(aliment.glucide || 0).toFixed(0)} • L ${Number(aliment.lipide || 0).toFixed(0)} • P ${Number(aliment.proteine || 0).toFixed(0)}`;
     div.innerHTML = "<strong>" + aliment.nom + "</strong><br aria-hidden=\"true\">" + aliment.categorie + " • " + aliment.calories_100g + " kcal /100g" + macros;
 
+    div.onclick=()=>{
+      document.querySelectorAll(".aliment").forEach(el=>el.classList.remove("aliment-selectionne"));
     div.onclick = () => {
       document.querySelectorAll(".aliment").forEach(el => el.classList.remove("aliment-selectionne"));
-      div.classList.add("aliment-selectionne");
+div.classList.add("aliment-selectionne");
+      alimentSelectionne=aliment;
+      document.getElementById("selection").innerHTML="Sélection : "+aliment.nom;
+      document.getElementById("quantite").value=aliment.portion_defaut||100;
       alimentSelectionne = aliment;
       document.getElementById("selection").innerHTML = "Sélection : " + aliment.nom;
       document.getElementById("quantite").value = aliment.portion_defaut || 100;
-    };
+};
 
+    if(alimentSelectionne&&aliment.id===alimentSelectionne.id)div.classList.add("aliment-selectionne");
     if (alimentSelectionne && aliment.id === alimentSelectionne.id) div.classList.add("aliment-selectionne");
-    listeAliments.appendChild(div);
-  });
+listeAliments.appendChild(div);
+});
 }
 
 function reinitialiserSelectionAliment(){
+  document.getElementById("recherche").value="";
   document.getElementById("recherche").value = "";
-  afficherAliments("");
+afficherAliments("");
+  if(alimentSelectionne){
+    document.getElementById("selection").innerHTML="Sélection : "+alimentSelectionne.nom;
+    document.getElementById("quantite").value=alimentSelectionne.portion_defaut||100;
   if (alimentSelectionne) {
     document.getElementById("selection").innerHTML = "Sélection : " + alimentSelectionne.nom;
     document.getElementById("quantite").value = alimentSelectionne.portion_defaut || 100;
-  }
+}
 }
 
+document.getElementById("recherche").addEventListener("input",function(){afficherAliments(this.value);});
 document.getElementById("recherche").addEventListener("input", function(){
   afficherAliments(this.value);
 });
 
+poidsInput.addEventListener("change",function(){
+  if(!this.checkValidity()){
 poidsInput.addEventListener("change", function(){
   if (!this.checkValidity()) {
-    alert("Saisissez un poids compris entre 0 et 999,9 kg avec une seule décimale au maximum.");
-    afficherRepas();
-    return;
-  }
+alert("Saisissez un poids compris entre 0 et 999,9 kg avec une seule décimale au maximum.");
+afficherRepas();
+return;
+}
+  const poidsKg=this.value===""?null:this.valueAsNumber;
+  if(!historiqueRepas[dateSelectionnee])historiqueRepas[dateSelectionnee]={repas:[],total:0,poidsKg:null};
+  historiqueRepas[dateSelectionnee].poidsKg=poidsKg;
+  if(poidsKg!==null)this.value=poidsKg.toFixed(1);
   const poidsKg = this.value === "" ? null : this.valueAsNumber;
   historiqueRepas[dateSelectionnee].poidsKg = poidsKg;
   if (poidsKg !== null) this.value = poidsKg.toFixed(1);
-  sauvegarderRepas();
-  afficherHistorique();
+sauvegarderRepas();
+afficherHistorique();
 });
 
 function ajouterAuRepas(){
+  if(!alimentSelectionne){alert("Sélectionnez un aliment.");return}
+  const nom=alimentSelectionne.nom;
+  const quantite=parseFloat(document.getElementById("quantite").value);
+  const calories100g=alimentSelectionne.calories_100g;
+  const macros=calculerMacros(alimentSelectionne,quantite);
+  const calories=(quantite*calories100g)/100;
+  const repasDuJour=getRepasDuJour();
+
+  repasDuJour.push({nom,quantite,calories,glucide:macros.glucide,lipide:macros.lipide,proteine:macros.proteine});
   if (!alimentSelectionne) { alert("Sélectionnez un aliment."); return; }
 
   const nom = alimentSelectionne.nom;
@@ -702,53 +974,78 @@ function ajouterAuRepas(){
     proteine: macros.proteine
   });
 
-  setRepasDuJour(repasDuJour);
-  reinitialiserSelectionAliment();
-  afficherRepas();
+setRepasDuJour(repasDuJour);
+reinitialiserSelectionAliment();
+afficherRepas();
 }
 
 function afficherRepas(){
+  const zone=document.getElementById("repas");
+  zone.innerHTML="";
   const zone = document.getElementById("repas");
   zone.innerHTML = "";
 
+  const jour=historiqueRepas[dateSelectionnee];
+  poidsInput.value=jour?.poidsKg==null?"":Number(jour.poidsKg).toFixed(1);
+  const repasDuJour=getRepasDuJour();
+  let total=0;
   const jour = historiqueRepas[dateSelectionnee];
   poidsInput.value = jour?.poidsKg ?? "";
   const repasDuJour = getRepasDuJour();
   let total = 0;
 
+  repasDuJour.forEach((item,index)=>{
+    total += Number(item.calories)||0;
   repasDuJour.forEach((item, index) => {
     total += Number(item.calories) || 0;
 
+    const ligne=document.createElement("div");
+    ligne.className="ligneRepas";
+    ligne.innerHTML=`
     const ligne = document.createElement("div");
     ligne.className = "ligneRepas";
 
     ligne.innerHTML = `
-      <div>
+     <div>
         ${item.dateHeure ? `<div class="info">${item.dateHeure}</div>` : ""}
-        <strong>${item.nom}</strong><br>
+       <strong>${item.nom}</strong><br>
+        ${Number(item.quantite)||0} g - ${(Number(item.calories)||0).toFixed(0)} kcal
+        <div class="info">G ${(Number(item.glucide)||0).toFixed(0)} • L ${(Number(item.lipide)||0).toFixed(0)} • P ${(Number(item.proteine)||0).toFixed(0)}</div>
         ${Number(item.quantite) || 0} g
         - ${(Number(item.calories) || 0).toFixed(0)} kcal
         <div class="info">G ${(Number(item.glucide) || 0).toFixed(0)} • L ${(Number(item.lipide) || 0).toFixed(0)} • P ${(Number(item.proteine) || 0).toFixed(0)}</div>
-      </div>
-      <button class="btnSupprimer" onclick="supprimer(${index})">✕</button>
-    `;
+     </div>
+     <button class="btnSupprimer" onclick="supprimer(${index})">✕</button>
+   `;
 
-    zone.appendChild(ligne);
-  });
+zone.appendChild(ligne);
+});
 
+  document.getElementById("total").innerHTML=total.toFixed(0)+" kcal";
   document.getElementById("total").innerHTML = total.toFixed(0) + " kcal";
-  afficherHistorique();
+afficherHistorique();
 }
 
 function afficherHistorique(){
+  const historiqueZone=document.getElementById("historiqueJours");
+  const jours=getHistoriqueTrie();
   const historiqueZone = document.getElementById("historiqueJours");
   const jours = getHistoriqueTrie();
 
+  if(!jours.length){
+    historiqueZone.innerHTML="Aucun repas enregistré.";
   if (!jours.length) {
     historiqueZone.innerHTML = "Aucun repas enregistré.";
-    return;
-  }
+return;
+}
 
+  historiqueZone.innerHTML=jours.map(([dateJour,data])=>{
+    const items=Array.isArray(data?.repas)?data.repas:[];
+    const totalJour=items.reduce((s,item)=>s+(Number(item.calories)||0),0);
+    const poidsJour=data?.poidsKg==null?"":` • ${Number(data.poidsKg).toFixed(1)} kg`;
+    const actif=dateJour===dateSelectionnee?"<strong>•</strong> ":"";
+    return `<div class="historiqueJour"><div>${actif}${formaterDate(dateJour)}</div><div>${items.length} aliments • ${totalJour.toFixed(0)} kcal${poidsJour}</div></div>`;
+  }).join("");
   historiqueZone.innerHTML = jours
     .map(([dateJour, data]) => {
       const items = Array.isArray(data?.repas) ? data.repas : [];
@@ -766,13 +1063,25 @@ function afficherHistorique(){
 }
 
 function supprimer(index){
+  const repasDuJour=getRepasDuJour();
+  repasDuJour.splice(index,1);
   const repasDuJour = getRepasDuJour();
   repasDuJour.splice(index, 1);
-  setRepasDuJour(repasDuJour);
-  afficherRepas();
+setRepasDuJour(repasDuJour);
+afficherRepas();
 }
 
 async function exporterRepasJSON(){
+  const repasJour=getRepasDuJour();
+  const donnees={
+    date:dateSelectionnee,
+    repas:repasJour.map(item=>({
+      nom:item.nom,
+      quantite:Number(item.quantite)||0,
+      calories:Number(item.calories)||0,
+      glucide:Number(item.glucide)||0,
+      lipide:Number(item.lipide)||0,
+      proteine:Number(item.proteine)||0
   const repasJour = getRepasDuJour();
   const donnees = {
     date: dateSelectionnee,
@@ -784,49 +1093,89 @@ async function exporterRepasJSON(){
       lipide: Number(item.lipide) || 0,
       proteine: Number(item.proteine) || 0,
       dateHeure: item.dateHeure || null
-    })),
+})),
+    total:repasJour.reduce((sum,item)=>sum+(Number(item.calories)||0),0),
+    poidsKg:historiqueRepas[dateSelectionnee]?.poidsKg??null
     total: repasJour.reduce((sum, item) => sum + (Number(item.calories) || 0), 0),
     poidsKg: historiqueRepas[dateSelectionnee]?.poidsKg ?? null
-  };
+};
 
+  const jsonContent=JSON.stringify(donnees,null,2);
+  const nomFichier=getJsonFileName();
   const jsonContent = JSON.stringify(donnees, null, 2);
   const nomFichier = getJsonFileName();
 
+  const ecrit=await enregistrerDansDossierImportation(nomFichier,jsonContent,"application/json");
+  if(ecrit){alert("Fichier JSON enregistré dans le dossier Importation.");return}
   const ecrit = await enregistrerDansDossierImportation(nomFichier, jsonContent, "application/json");
   if (ecrit) {
     alert("Fichier JSON enregistré dans le dossier Importation.");
     return;
   }
 
+  if(window.showSaveFilePicker){
+    try{
+      const fichierHandle=await window.showSaveFilePicker({
+        suggestedName:nomFichier,
+        types:[{description:"JSON",accept:{"application/json":[".json"]}}]
   if (window.showSaveFilePicker) {
     try {
       const fichierHandle = await window.showSaveFilePicker({
         suggestedName: nomFichier,
         types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
-      });
+});
+      const flux=await fichierHandle.createWritable();
       const flux = await fichierHandle.createWritable();
-      await flux.write(jsonContent);
-      await flux.close();
-      alert("Fichier JSON enregistré.");
-      return;
+await flux.write(jsonContent);
+await flux.close();
+alert("Fichier JSON enregistré.");
+return;
+    }catch(erreur){
+      if(erreur&&erreur.name!=="AbortError")console.warn("Enregistrement fichier bloqué, fallback sur téléchargement.",erreur);
     } catch (erreur) {
       if (erreur && erreur.name !== "AbortError") {
         console.warn("Enregistrement fichier bloqué, fallback sur téléchargement.", erreur);
       }
-    }
-  }
+}
+}
 
+  const blob=new Blob([jsonContent],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const lien=document.createElement("a");
+  lien.href=url; lien.download=nomFichier; lien.click();
   const blob = new Blob([jsonContent], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const lien = document.createElement("a");
   lien.href = url;
   lien.download = nomFichier;
   lien.click();
-  URL.revokeObjectURL(url);
-  alert("Fichier JSON téléchargé dans votre navigateur.");
+URL.revokeObjectURL(url);
+alert("Fichier JSON téléchargé dans votre navigateur.");
 }
 
 function importerRepasJSON(event){
+  const fichier=event.target.files[0];
+  if(!fichier)return;
+
+  const lecteur=new FileReader();
+  lecteur.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+
+      if(data&&typeof data==="object"&&data.repasParJour){
+        historiqueRepas=normaliserHistorique(data.repasParJour);
+      }else if(data&&typeof data==="object"&&Array.isArray(data.repas)){
+        const poids=Number(data.poidsKg);
+        const poidsValide=data.poidsKg!==null&&data.poidsKg!==""&&Number.isFinite(poids)&&poids>=0&&poids<=999.9;
+        historiqueRepas={
+          [dateSelectionnee]:{
+            repas:data.repas.map(item=>({
+              nom:item.nom,
+              quantite:Number(item.quantite)||0,
+              calories:Number(item.calories)||0,
+              glucide:Number(item.glucide)||0,
+              lipide:Number(item.lipide)||0,
+              proteine:Number(item.proteine)||0
   const fichier = event.target.files[0];
   if (!fichier) return;
 
@@ -848,10 +1197,22 @@ function importerRepasJSON(event){
               glucide: Number(item.glucide) || 0,
               lipide: Number(item.lipide) || 0,
               proteine: Number(item.proteine) || 0
-            })),
+})),
+            total:data.repas.reduce((s,item)=>s+(Number(item.calories)||0),0),
+            poidsKg:poidsValide?poids:null
             total: data.repas.reduce((s, item) => s + (Number(item.calories) || 0), 0)
-          }
-        };
+}
+};
+      }else if(Array.isArray(data)){
+        historiqueRepas={
+          [dateSelectionnee]:{
+            repas:data.map(item=>({
+              nom:item.nom,
+              quantite:Number(item.quantite)||0,
+              calories:Number(item.calories)||0,
+              glucide:Number(item.glucide)||0,
+              lipide:Number(item.lipide)||0,
+              proteine:Number(item.proteine)||0
       } else if (Array.isArray(data)) {
         historiqueRepas = {
           [dateSelectionnee]: {
@@ -863,29 +1224,39 @@ function importerRepasJSON(event){
               glucide: Number(item.glucide) || 0,
               lipide: Number(item.lipide) || 0,
               proteine: Number(item.proteine) || 0
-            })),
+})),
+            total:data.reduce((s,item)=>s+(Number(item.calories)||0),0),
+            poidsKg:null
             total: data.reduce((s, item) => s + (Number(item.calories) || 0), 0)
-          }
-        };
+}
+};
+      }else{
       } else {
-        alert("Format JSON invalide.");
-        return;
-      }
-
-      if (!historiqueRepas[dateSelectionnee]) historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
-
-      sauvegarderRepas();
-      afficherRepas();
-      alert("Repas importé avec succès.");
-    } catch (err) {
-      console.error(err);
-      alert("Erreur de lecture du fichier JSON.");
-    }
-  };
-
-  lecteur.readAsText(fichier);
+alert("Format JSON invalide.");
+return;
 }
 
+      if(!historiqueRepas[dateSelectionnee])historiqueRepas[dateSelectionnee]={repas:[],total:0,poidsKg:null};
+      if (!historiqueRepas[dateSelectionnee]) historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
+
+sauvegarderRepas();
+afficherRepas();
+alert("Repas importé avec succès.");
+    }catch(err){
+    } catch (err) {
+console.error(err);
+alert("Erreur de lecture du fichier JSON.");
+    }finally{
+      event.target.value="";
+}
+};
+
+lecteur.readAsText(fichier);
+}
+
+window.addEventListener("pageshow",sauvegarderRepas);
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")sauvegarderRepas();});
+window.addEventListener("beforeunload",sauvegarderRepas);
 window.addEventListener("pageshow", sauvegarderRepas);
 document.addEventListener("visibilitychange", function () {
   if (document.visibilityState === "hidden") sauvegarderRepas();
@@ -895,6 +1266,7 @@ window.addEventListener("beforeunload", sauvegarderRepas);
 chargerRepas();
 afficherAliments("");
 afficherRepas();
+console.log("Nombre d'aliments :",aliments.length);
 console.log("Nombre d'aliments :", aliments.length);
 </script>
 </body>
