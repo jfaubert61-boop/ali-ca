@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cal_New_V4_5</title>
+<title>Cal_New_V4_51</title>
 <style>
 body{
     font-family:-apple-system,BlinkMacSystemFont,sans-serif;
@@ -140,7 +140,7 @@ button:active{ opacity:0.8; }
 </head>
 <body>
 <div class="container">
-  <h1>🍎 Cal_New_V4_5</h1>
+  <h1>🍎 Cal_New_V4_51</h1>
 
   <div class="card">
     <h2>Repas</h2>
@@ -404,7 +404,8 @@ function formaterDate(dateStr){
 
 function formaterDateHeure(date) {
   const pad = (nombre) => String(nombre).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const annee = String(date.getFullYear()).slice(-2);
+  return `${annee}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}${pad(date.getMinutes())}`;
 }
 
 function normaliserHistorique(data){
