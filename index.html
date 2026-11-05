@@ -497,6 +497,35 @@ function chargerRepas(){
   historiqueRepas[dateSelectionnee] = { repas: [], total: 0 };
 }
 
+function demanderPoidsSiManquant() {
+  const poidsEnregistre = historiqueRepas[dateSelectionnee]?.poidsKg;
+  if (poidsEnregistre !== null && poidsEnregistre !== undefined) return;
+
+  let poidsSaisi = null;
+  while (poidsSaisi === null) {
+    const saisie = window.prompt("Saisissez votre poids du jour en kg :", "");
+    if (saisie === null) return;
+
+    const valeur = saisie.trim().replace(",", ".");
+    if (valeur === "") {
+      alert("Le poids est obligatoire.");
+      continue;
+    }
+
+    const nombre = Number(valeur);
+    if (!Number.isFinite(nombre) || nombre < 0 || nombre > 999.9) {
+      alert("Saisissez un poids compris entre 0 et 999,9 kg avec une seule décimale au maximum.");
+      continue;
+    }
+
+    poidsSaisi = nombre;
+    historiqueRepas[dateSelectionnee].poidsKg = poidsSaisi;
+    poidsInput.value = poidsSaisi.toFixed(1);
+    sauvegarderRepas();
+    afficherHistorique();
+  }
+}
+
 function getRepasDuJour(){
   const jour = historiqueRepas[dateSelectionnee] || { repas: [] };
   return Array.isArray(jour.repas) ? jour.repas : [];
@@ -894,6 +923,7 @@ document.addEventListener("visibilitychange", function () {
 window.addEventListener("beforeunload", sauvegarderRepas);
 
 chargerRepas();
+demanderPoidsSiManquant();
 afficherAliments("");
 afficherRepas();
 console.log("Nombre d'aliments :", aliments.length);
