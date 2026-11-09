@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cal_New_V5_0</title>
+<title>Cal_New_V5_1</title>
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f2f7;margin:0;padding:12px;font-size:14px}.container{max-width:700px;margin:auto}h1{text-align:center;color:#007AFF;font-size:24px;margin:8px 0 16px}h2{margin:0 0 10px;font-size:18px}.card{background:white;padding:12px;margin-bottom:12px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,.08)}label{display:block;margin-top:8px;font-weight:600;font-size:13px}input{width:100%;box-sizing:border-box;padding:10px 11px;border:1px solid #ccc;border-radius:8px;font-size:14px}button{width:100%;padding:12px;margin-top:12px;border:0;border-radius:8px;font-size:14px;font-weight:bold;color:white;background:#007AFF}button:active{opacity:.8}#listeAliments{margin-top:10px;border-top:1px solid #eee;max-height:min(52vh,360px);overflow-y:auto;overflow-x:hidden;padding-right:6px;scroll-behavior:smooth}.aliment{padding:10px 8px;border-bottom:1px solid #eee;cursor:pointer;font-size:13px;line-height:1.35}.aliment:hover{background:#f7f9ff}.aliment-selectionne{background:#d6e9ff;border-radius:6px}.selection{margin-top:10px;color:#007AFF;font-weight:bold;font-size:13px}.ligneRepas{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding:8px 0;font-size:13px}.btnSupprimer{width:auto;background:#ff3b30;margin:0;padding:6px 10px;font-size:12px}.total{text-align:center;font-size:22px;font-weight:bold;color:#34C759}.info{color:#666;font-size:12px;margin-top:8px}@media(max-width:480px){#listeAliments{max-height:40vh}.aliment{font-size:12.5px;padding:9px 6px}}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>🍎 Cal_New_V5_0</h1>
+<h1>🍎 Cal_New_V5_1</h1>
 <div class="card"><h2>Repas</h2><div id="total" class="total">0 kcal</div><div style="display:grid;gap:8px"><button onclick="exporterRepasJSON()">📤 Exporter repas JSON</button><button onclick="sauvegarderCSV()">📄 Enregistrer CSV dans le dossier</button></div><input type="file" id="importRepas" accept=".json" onchange="importerRepasJSON(event)"><div id="repas"></div></div>
 <div class="card"><label>Aliment personnalisé</label><input type="text" id="nomAlimentPerso" placeholder="Nom de l'aliment"><input type="text" id="categorieAlimentPerso" placeholder="Catégorie (ex. Fruit, Viande, Dessert)"><input type="number" id="kcalPerso" min="0" step="1" placeholder="kcal / 100g"><input type="number" id="glucidePerso" min="0" step="0.1" value="" placeholder="Glucides / 100g (g)"><input type="number" id="lipidePerso" min="0" step="0.1" value="" placeholder="Lipides / 100g (g)"><input type="number" id="proteinePerso" min="0" step="0.1" value="" placeholder="Protéines / 100g (g)"><button onclick="ajouterAlimentPerso()">Ajouter à la liste</button></div>
 <div class="card"><label>Recherche</label><input type="text" id="recherche" placeholder="Exemple : pomme"><div id="selection" class="selection">Aucun aliment sélectionné</div><div id="listeAliments"></div><label>Quantité (g)</label><input type="number" id="quantite" value="100" min="1"><button onclick="ajouterAuRepas()">Ajouter au repas</button></div>
