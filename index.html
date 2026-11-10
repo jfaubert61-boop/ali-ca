@@ -123,7 +123,10 @@ const BASE_ALIMENTS=[
 {"id":101,"nom":"Vin","categorie":"Alcool","portion_defaut":100,"unite":"g","calories_100g":71,"glucide":2,"lipide":0,"proteine":0.1},
 {"id":102,"nom":"Yogourt nature 1.5% Coop","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":48,"glucide":3.9,"lipide":1.5,"proteine":4.6},
 {"id":103,"nom":"Yogourt nature lait entier","categorie":"Produit laitier","portion_defaut":100,"unite":"g","calories_100g":66,"glucide":4.5,"lipide":3.6,"proteine":3.9},
-{"id":104,"nom":"Zwiebach Roland 6g","categorie":"Pain","portion_defaut":6,"unite":"g","calories_100g":420,"glucide":74,"lipide":8.3,"proteine":12}
+{"id":104,"nom":"Zwiebach Roland 6g","categorie":"Pain","portion_defaut":6,"unite":"g","calories_100g":420,"glucide":74,"lipide":8.3,"proteine":12},
+{"id":105,"nom":"Chèvre frais","categorie":"Fromage","portion_defaut":100,"unite":"g","calories_100g":162,"glucide":2.4,"lipide":12,"proteine":10.6},
+{"id":106,"nom":"Chèvre bûche","categorie":"Fromage","portion_defaut":100,"unite":"g","calories_100g":290,"glucide":0.5,"lipide":26,"proteine":21},
+{"id":107,"nom":"Chèvre tomme","categorie":"Fromage","portion_defaut":100,"unite":"g","calories_100g":330,"glucide":0,"lipide":26,"proteine":24}
 ];
 let aliments=[...BASE_ALIMENTS],historiqueRepas={},dateSelectionnee=new Date().toISOString().slice(0,10),alimentSelectionne=null,dossierImportation=null;
 const STORAGE_KEY="ali-ca-repas",CUSTOM_FOODS_KEY="ali-ca-custom-foods",BACKUP_KEY="ali-ca-onedrive-backup-",listeAliments=document.getElementById("listeAliments");
