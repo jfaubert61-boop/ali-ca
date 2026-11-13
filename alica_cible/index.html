@@ -9,13 +9,30 @@
     <h1>ali_cible</h1>
     <button id="import-button" type="button">Importer ali_cible.json</button>
     <input id="json-file" type="file" accept=".json,application/json" hidden>
+    <button id="meal-import-button" type="button">Importer un JSON d’aliments</button>
+    <input id="meal-json-file" type="file" accept=".json,application/json" hidden>
     <p id="status" role="status" aria-live="polite"></p>
     <pre id="json-content"></pre>
+    <p id="meal-status" role="status" aria-live="polite"></p>
+    <table id="meal-totals" hidden>
+      <caption>Somme des aliments importés</caption>
+      <thead>
+        <tr><th scope="col">Kcal</th><th scope="col">Glucides (g)</th><th scope="col">Lipides (g)</th><th scope="col">Protéines (g)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td id="total-calories"></td><td id="total-glucide"></td><td id="total-lipide"></td><td id="total-proteine"></td></tr>
+      </tbody>
+    </table>
 
     <script>
       const fileInput = document.getElementById('json-file');
       const status = document.getElementById('status');
       const content = document.getElementById('json-content');
+      const mealFileInput = document.getElementById('meal-json-file');
+      const mealStatus = document.getElementById('meal-status');
+      const mealTotals = document.getElementById('meal-totals');
+      const nutrients = ['calories', 'glucide', 'lipide', 'proteine'];
+      const numberFormat = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 6 });
 
       document.getElementById('import-button').addEventListener('click', () => fileInput.click());
       fileInput.addEventListener('change', async () => {
@@ -30,6 +47,53 @@
           status.textContent = `Fichier ${file.name} importé.`;
         } catch (error) {
           status.textContent = `Impossible d’importer ${file.name} : ${error.message}`;
+        }
+      });
+
+      document.getElementById('meal-import-button').addEventListener('click', () => mealFileInput.click());
+      mealFileInput.addEventListener('change', async () => {
+        const file = mealFileInput.files[0];
+        if (!file) return;
+
+        mealStatus.textContent = '';
+        mealTotals.hidden = true;
+        try {
+          const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
+          let meals;
+          if (Array.isArray(data)) {
+            meals = data;
+          } else if (Array.isArray(data?.repas)) {
+            meals = data.repas;
+          } else if (data?.repasParJour && typeof data.repasParJour === 'object' && !Array.isArray(data.repasParJour)) {
+            meals = Object.values(data.repasParJour).flatMap(day => {
+              if (Array.isArray(day)) return day;
+              if (Array.isArray(day?.repas)) return day.repas;
+              throw new Error('Format de repas par jour invalide.');
+            });
+          } else {
+            throw new Error('Le fichier doit contenir une liste d’aliments ou de repas.');
+          }
+
+          const totals = Object.fromEntries(nutrients.map(nutrient => [nutrient, 0]));
+          meals.forEach((meal, index) => {
+            nutrients.forEach(nutrient => {
+              const value = meal?.[nutrient];
+              if ((typeof value !== 'number' && (typeof value !== 'string' || value.trim() === '')) || !Number.isFinite(Number(value))) {
+                throw new Error(`Valeur ${nutrient} invalide pour l’aliment ${index + 1}.`);
+              }
+              totals[nutrient] += Number(value);
+              if (!Number.isFinite(totals[nutrient])) throw new Error(`Total ${nutrient} trop grand.`);
+            });
+          });
+          nutrients.forEach(nutrient => {
+            document.getElementById(`total-${nutrient}`).textContent = numberFormat.format(totals[nutrient]);
+          });
+          mealTotals.hidden = false;
+          mealStatus.textContent = `Fichier ${file.name} importé : ${meals.length} aliment(s).`;
+        } catch (error) {
+          mealStatus.textContent = `Impossible d’importer ${file.name} : ${error.message}`;
+        } finally {
+          mealFileInput.value = '';
         }
       });
     </script>
