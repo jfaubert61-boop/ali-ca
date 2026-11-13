@@ -15,9 +15,12 @@
     <table id="target-values" hidden>
       <caption>Valeurs cibles importées</caption>
       <thead>
-        <tr><th scope="col">Cible</th><th scope="col">Valeur</th></tr>
+        <tr><th scope="col">Kcal</th><th scope="col">Glu</th><th scope="col">Lip</th><th scope="col">Prot</th></tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <tr><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td></tr>
+      </tbody>
     </table>
     <p id="meal-status" role="status" aria-live="polite"></p>
     <table id="meal-totals" hidden>
@@ -34,7 +37,8 @@
       const fileInput = document.getElementById('json-file');
       const status = document.getElementById('status');
       const targetValues = document.getElementById('target-values');
-      const targetValuesBody = targetValues.querySelector('tbody');
+      const targetCells = targetValues.querySelectorAll('tbody td');
+      const targetFields = ['Kcal', 'Glu', 'Lip', 'Prot', null, 'Glu %', 'Lip %', 'Prot %'];
       const mealFileInput = document.getElementById('meal-json-file');
       const mealStatus = document.getElementById('meal-status');
       const mealTotals = document.getElementById('meal-totals');
@@ -48,35 +52,25 @@
 
         status.textContent = '';
         targetValues.hidden = true;
-        targetValuesBody.replaceChildren();
+        targetCells.forEach(cell => { cell.textContent = ''; });
         try {
           const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
-          if (data === null || typeof data !== 'object') {
-            throw new Error('Le fichier doit contenir un objet ou une liste de valeurs cibles.');
+          if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+            throw new Error('Le fichier doit contenir un objet de valeurs cibles.');
           }
-
-          function addValues(value, path) {
-            if (value !== null && typeof value === 'object' && Object.keys(value).length > 0) {
-              Object.entries(value).forEach(([key, child]) => {
-                addValues(child, path ? `${path} / ${key}` : key);
-              });
-              return;
+          targetFields.forEach(field => {
+            if (field === null) return;
+            const value = data[field];
+            if (!Object.hasOwn(data, field) || (typeof value !== 'number' && (typeof value !== 'string' || value.trim() === ''))) {
+              throw new Error(`Valeur « ${field} » manquante ou invalide.`);
             }
-            const row = document.createElement('tr');
-            const label = document.createElement('th');
-            const cell = document.createElement('td');
-            label.scope = 'row';
-            label.textContent = path || 'Valeurs cibles';
-            cell.textContent = typeof value === 'object' ? JSON.stringify(value) : String(value);
-            row.append(label, cell);
-            targetValuesBody.append(row);
-          }
-
-          addValues(data, '');
+          });
+          targetFields.forEach((field, index) => {
+            if (field !== null) targetCells[index].textContent = data[field];
+          });
           targetValues.hidden = false;
           status.textContent = `Fichier ${file.name} importé.`;
         } catch (error) {
-          targetValuesBody.replaceChildren();
           status.textContent = `Impossible d’importer ${file.name} : ${error.message}`;
         } finally {
           fileInput.value = '';
