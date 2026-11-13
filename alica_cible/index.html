@@ -5,6 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ali_cible</title>
     <style>
+      .file-button {
+        position: relative;
+        display: inline-block;
+        padding: 2px 6px;
+        border: 2px outset buttonborder;
+        border-radius: 2px;
+        background: buttonface;
+        color: buttontext;
+        font: 13.3333px Arial, sans-serif;
+        cursor: pointer;
+      }
+
+      .file-button:focus-within {
+        outline: 2px solid Highlight;
+        outline-offset: 2px;
+      }
+
+      .file-button input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
       table {
         width: min(100%, 632px);
         table-layout: fixed;
@@ -32,10 +59,12 @@
   </head>
   <body>
     <h1>ali_cible</h1>
-    <button id="import-button" type="button">Importer ali_cible.json</button>
-    <input id="json-file" type="file" accept=".json,application/json" hidden>
-    <button id="meal-import-button" type="button">Importer un JSON d’aliments</button>
-    <input id="meal-json-file" type="file" accept=".json,application/json" hidden>
+    <label class="file-button">Importer ali_cible.json
+      <input id="json-file" type="file" accept=".json,application/json">
+    </label>
+    <label class="file-button">Importer un JSON d’aliments
+      <input id="meal-json-file" type="file" accept=".json,application/json">
+    </label>
     <p id="status" role="status" aria-live="polite"></p>
     <table id="target-values" hidden>
       <caption>Valeurs cibles</caption>
@@ -60,7 +89,7 @@
 
     <script>
       const fileInput = document.getElementById('json-file');
-      const status = document.getElementById('status');
+      const targetStatus = document.getElementById('status');
       const targetValues = document.getElementById('target-values');
       const targetCells = targetValues.querySelectorAll('tbody td');
       const targetFields = ['Kcal', 'Glu', 'Lip g', 'Prot p', null, 'Glu %', 'Lip %', 'Prot %'];
@@ -70,24 +99,33 @@
       const nutrients = ['calories', 'glucide', 'lipide', 'proteine'];
       const numberFormat = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 6 });
 
-      document.getElementById('import-button').addEventListener('click', () => fileInput.click());
+      function readFile(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error || new Error('Erreur de lecture du fichier.'));
+          reader.onabort = () => reject(new Error('Lecture du fichier annulée.'));
+          reader.readAsText(file);
+        });
+      }
+
       fileInput.addEventListener('change', async () => {
         const file = fileInput.files[0];
         if (!file) return;
 
-        status.textContent = '';
+        targetStatus.textContent = '';
         targetValues.hidden = true;
         targetCells.forEach(cell => { cell.textContent = ''; });
         try {
-          const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
-          if (!Array.isArray(data?.cible) || data.cible.length !== 1 || data.cible[0] === null || typeof data.cible[0] !== 'object' || Array.isArray(data.cible[0])) {
+          const data = JSON.parse((await readFile(file)).replace(/^\uFEFF/, ''));
+          if (!data || !Array.isArray(data.cible) || data.cible.length !== 1 || data.cible[0] === null || typeof data.cible[0] !== 'object' || Array.isArray(data.cible[0])) {
             throw new Error('Le fichier doit contenir une seule cible dans la liste « cible ».');
           }
           const target = data.cible[0];
           targetFields.forEach(field => {
             if (field === null) return;
             const value = target[field];
-            if (!Object.hasOwn(target, field) || (typeof value !== 'number' && (typeof value !== 'string' || value.trim() === ''))) {
+            if (!Object.prototype.hasOwnProperty.call(target, field) || (typeof value !== 'number' && (typeof value !== 'string' || value.trim() === ''))) {
               throw new Error(`Valeur « ${field} » manquante ou invalide.`);
             }
           });
@@ -97,15 +135,14 @@
             targetCells[index].textContent = field.endsWith(' %') && !value.endsWith('%') ? `${value}%` : value;
           });
           targetValues.hidden = false;
-          status.textContent = `Fichier ${file.name} importé.`;
+          targetStatus.textContent = `Fichier ${file.name} importé.`;
         } catch (error) {
-          status.textContent = `Impossible d’importer ${file.name} : ${error.message}`;
+          targetStatus.textContent = `Impossible d’importer ${file.name} : ${error.message}`;
         } finally {
           fileInput.value = '';
         }
       });
 
-      document.getElementById('meal-import-button').addEventListener('click', () => mealFileInput.click());
       mealFileInput.addEventListener('change', async () => {
         const file = mealFileInput.files[0];
         if (!file) return;
@@ -113,26 +150,27 @@
         mealStatus.textContent = '';
         mealTotals.hidden = true;
         try {
-          const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
+          const data = JSON.parse((await readFile(file)).replace(/^\uFEFF/, ''));
           let meals;
           if (Array.isArray(data)) {
             meals = data;
-          } else if (Array.isArray(data?.repas)) {
+          } else if (data && Array.isArray(data.repas)) {
             meals = data.repas;
-          } else if (data?.repasParJour && typeof data.repasParJour === 'object' && !Array.isArray(data.repasParJour)) {
-            meals = Object.values(data.repasParJour).flatMap(day => {
-              if (Array.isArray(day)) return day;
-              if (Array.isArray(day?.repas)) return day.repas;
+          } else if (data && data.repasParJour && typeof data.repasParJour === 'object' && !Array.isArray(data.repasParJour)) {
+            meals = Object.values(data.repasParJour).reduce((all, day) => {
+              if (Array.isArray(day)) return all.concat(day);
+              if (day && Array.isArray(day.repas)) return all.concat(day.repas);
               throw new Error('Format de repas par jour invalide.');
-            });
+            }, []);
           } else {
             throw new Error('Le fichier doit contenir une liste d’aliments ou de repas.');
           }
 
-          const totals = Object.fromEntries(nutrients.map(nutrient => [nutrient, 0]));
+          const totals = {};
+          nutrients.forEach(nutrient => { totals[nutrient] = 0; });
           meals.forEach((meal, index) => {
             nutrients.forEach(nutrient => {
-              const value = meal?.[nutrient];
+              const value = meal && meal[nutrient];
               if ((typeof value !== 'number' && (typeof value !== 'string' || value.trim() === '')) || !Number.isFinite(Number(value))) {
                 throw new Error(`Valeur ${nutrient} invalide pour l’aliment ${index + 1}.`);
               }
