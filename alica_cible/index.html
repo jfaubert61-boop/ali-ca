@@ -38,7 +38,7 @@
       const status = document.getElementById('status');
       const targetValues = document.getElementById('target-values');
       const targetCells = targetValues.querySelectorAll('tbody td');
-      const targetFields = ['Kcal', 'Glu', 'Lip', 'Prot', null, 'Glu %', 'Lip %', 'Prot %'];
+      const targetFields = ['Kcal', 'Glu', 'Lip g', 'Prot p', null, 'Glu %', 'Lip %', 'Prot %'];
       const mealFileInput = document.getElementById('meal-json-file');
       const mealStatus = document.getElementById('meal-status');
       const mealTotals = document.getElementById('meal-totals');
@@ -55,18 +55,19 @@
         targetCells.forEach(cell => { cell.textContent = ''; });
         try {
           const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
-          if (data === null || typeof data !== 'object' || Array.isArray(data)) {
-            throw new Error('Le fichier doit contenir un objet de valeurs cibles.');
+          if (!Array.isArray(data?.cible) || data.cible.length !== 1 || data.cible[0] === null || typeof data.cible[0] !== 'object' || Array.isArray(data.cible[0])) {
+            throw new Error('Le fichier doit contenir une seule cible dans la liste « cible ».');
           }
+          const target = data.cible[0];
           targetFields.forEach(field => {
             if (field === null) return;
-            const value = data[field];
-            if (!Object.hasOwn(data, field) || (typeof value !== 'number' && (typeof value !== 'string' || value.trim() === ''))) {
+            const value = target[field];
+            if (!Object.hasOwn(target, field) || (typeof value !== 'number' && (typeof value !== 'string' || value.trim() === ''))) {
               throw new Error(`Valeur « ${field} » manquante ou invalide.`);
             }
           });
           targetFields.forEach((field, index) => {
-            if (field !== null) targetCells[index].textContent = data[field];
+            if (field !== null) targetCells[index].textContent = target[field];
           });
           targetValues.hidden = false;
           status.textContent = `Fichier ${file.name} importé.`;
