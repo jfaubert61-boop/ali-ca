@@ -28,14 +28,44 @@
       #target-values tbody tr:last-child td {
         font: 16px Arial, sans-serif;
       }
+
+      .import-control {
+        position: relative;
+        display: inline-block;
+        padding: 2px 6px;
+        border: 1px solid #767676;
+        border-radius: 2px;
+        background: #efefef;
+        color: #111;
+        font: 13.3333px Arial, sans-serif;
+        cursor: pointer;
+      }
+
+      .import-control:focus-within {
+        outline: 2px solid #005fcc;
+        outline-offset: 2px;
+      }
+
+      .import-control input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
     <h1>ali_cible</h1>
-    <button id="import-button" type="button">Importer ali_cible.json</button>
-    <input id="json-file" type="file" accept=".json,application/json" hidden>
-    <button id="meal-import-button" type="button">Importer un JSON d’aliments</button>
-    <input id="meal-json-file" type="file" accept=".json,application/json" hidden>
+    <label class="import-control">
+      Importer ali_cible.json
+      <input id="json-file" type="file" accept=".json,application/json">
+    </label>
+    <label class="import-control">
+      Importer un JSON d’aliments
+      <input id="meal-json-file" type="file" accept=".json,application/json">
+    </label>
     <p id="status" role="status" aria-live="polite"></p>
     <table id="target-values" hidden>
       <caption>Valeurs cibles</caption>
@@ -70,7 +100,22 @@
       const nutrients = ['calories', 'glucide', 'lipide', 'proteine'];
       const numberFormat = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 6 });
 
-      document.getElementById('import-button').addEventListener('click', () => fileInput.click());
+      function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === 'string') {
+              resolve(reader.result);
+            } else {
+              reject(new Error('Lecture du fichier impossible.'));
+            }
+          };
+          reader.onerror = () => reject(reader.error || new Error('Lecture du fichier impossible.'));
+          reader.onabort = () => reject(new Error('Lecture du fichier interrompue.'));
+          reader.readAsText(file);
+        });
+      }
+
       fileInput.addEventListener('change', async () => {
         const file = fileInput.files[0];
         if (!file) return;
@@ -79,7 +124,7 @@
         targetValues.hidden = true;
         targetCells.forEach(cell => { cell.textContent = ''; });
         try {
-          const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
+          const data = JSON.parse((await readFileAsText(file)).replace(/^\uFEFF/, ''));
           if (!Array.isArray(data?.cible) || data.cible.length !== 1 || data.cible[0] === null || typeof data.cible[0] !== 'object' || Array.isArray(data.cible[0])) {
             throw new Error('Le fichier doit contenir une seule cible dans la liste « cible ».');
           }
@@ -87,7 +132,7 @@
           targetFields.forEach(field => {
             if (field === null) return;
             const value = target[field];
-            if (!Object.hasOwn(target, field) || (typeof value !== 'number' && (typeof value !== 'string' || value.trim() === ''))) {
+            if (!Object.prototype.hasOwnProperty.call(target, field) || (typeof value !== 'number' && (typeof value !== 'string' || value.trim() === ''))) {
               throw new Error(`Valeur « ${field} » manquante ou invalide.`);
             }
           });
@@ -105,7 +150,6 @@
         }
       });
 
-      document.getElementById('meal-import-button').addEventListener('click', () => mealFileInput.click());
       mealFileInput.addEventListener('change', async () => {
         const file = mealFileInput.files[0];
         if (!file) return;
@@ -113,7 +157,7 @@
         mealStatus.textContent = '';
         mealTotals.hidden = true;
         try {
-          const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
+          const data = JSON.parse((await readFileAsText(file)).replace(/^\uFEFF/, ''));
           let meals;
           if (Array.isArray(data)) {
             meals = data;
