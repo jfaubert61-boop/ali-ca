@@ -4,6 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ali_cible</title>
+    <style>
+      table {
+        width: min(100%, 632px);
+        table-layout: fixed;
+        border-collapse: collapse;
+        text-align: center;
+      }
+
+      caption {
+        border: 1px solid #ddd;
+        border-bottom: 0;
+        font: 16px Arial, sans-serif;
+        padding: 2px;
+      }
+
+      th, td {
+        border: 1px solid black;
+        padding: 2px;
+        font-size: clamp(14px, 3.5vw, 23px);
+      }
+
+      #target-values tbody tr:last-child td {
+        font: 16px Arial, sans-serif;
+      }
+    </style>
   </head>
   <body>
     <h1>ali_cible</h1>
@@ -13,9 +38,9 @@
     <input id="meal-json-file" type="file" accept=".json,application/json" hidden>
     <p id="status" role="status" aria-live="polite"></p>
     <table id="target-values" hidden>
-      <caption>Valeurs cibles importées</caption>
+      <caption>Valeurs cibles</caption>
       <thead>
-        <tr><th scope="col">Kcal</th><th scope="col">Glu</th><th scope="col">Lip</th><th scope="col">Prot</th></tr>
+        <tr><th scope="col">Kcal</th><th scope="col">Glucides (g)</th><th scope="col">Lipides (g)</th><th scope="col">Protéines (g)</th></tr>
       </thead>
       <tbody>
         <tr><td></td><td></td><td></td><td></td></tr>
@@ -67,7 +92,9 @@
             }
           });
           targetFields.forEach((field, index) => {
-            if (field !== null) targetCells[index].textContent = target[field];
+            if (field === null) return;
+            const value = String(target[field]).trim();
+            targetCells[index].textContent = field.endsWith(' %') && !value.endsWith('%') ? `${value}%` : value;
           });
           targetValues.hidden = false;
           status.textContent = `Fichier ${file.name} importé.`;
