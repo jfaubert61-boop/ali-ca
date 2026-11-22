@@ -1,5 +1,5 @@
 [
-{"id":"9999999999999999999999999","nom":"Version 20261122-0952","portion_defaut":0,"unite":"g","calories_100g":0,"glucide":0,"lipide":0,"proteine":0},
+{"id":999,"nom":"20261122-1131_Version","categorie":"Fruit sec","portion_defaut":0,"unite":"g","calories_100g":0,"glucide":0,"lipide":0,"proteine":0},
 {"id":1,"nom":"G+L-P+Abricot sec","categorie":"Fruit sec","portion_defaut":100,"unite":"g","calories_100g":276,"glucide":55,"lipide":0,"proteine":4.8},
 {"id":2,"nom":"G+L+P=Accompagn. choux-poire-marron-sauce","categorie":"Assiette","portion_defaut":150,"unite":"g","calories_100g":200,"glucide":35,"lipide":1.3,"proteine":2.5},
 {"id":3,"nom":"G+L+P=After Eight (8.3g / pce)","categorie":"Dessert","portion_defaut":8,"unite":"g","calories_100g":426,"glucide":73,"lipide":13,"proteine":2.1},
